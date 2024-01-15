@@ -1,14 +1,4 @@
 spring:
-  profiles:
-    active: prod
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: local
-
   datasource:
     url: ${PROD_DB_URL}
     username: ${PROD_DB_USER}
