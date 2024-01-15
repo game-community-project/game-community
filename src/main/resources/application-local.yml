@@ -1,16 +1,10 @@
 spring:
-  profiles:
-    active: local
-
----
-
-spring:
   config:
     activate:
       on-profile: local
 
   datasource:
-    url: ${DB_URL}
+    url: jdbc:mysql://localhost:${port}/${db_name}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
