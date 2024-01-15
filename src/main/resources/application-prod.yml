@@ -1,14 +1,4 @@
 spring:
-  profiles:
-    active: prod
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: local
-
   datasource:
     url: jdbc:mysql://localhost:${port}/${db_name}
     username: ${PROD_DB_USER}
