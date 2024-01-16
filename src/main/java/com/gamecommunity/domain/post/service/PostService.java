@@ -1,5 +1,7 @@
 package com.gamecommunity.domain.post.service;
 
+import static com.gamecommunity.domain.user.entity.UserRoleEnum.ADMIN;
+
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.entity.Post;
@@ -82,4 +84,39 @@ public class PostService {
 
     return postList.map(PostResponseDto::fromEntity);
   }
+
+  @Transactional
+  public void updatePost(
+      Long postId, PostRequestDto requestDto, MultipartFile file, UserDetailsImpl userDetails)
+      throws IOException {
+
+    Post post = getAuthenticationPost(postId, userDetails);
+
+    String imageUrl = post.getPostImageUrl();
+
+    // 파일이 존재하는 경우에만 이미지 업로드를 수행
+    if (file != null && !file.isEmpty()) {
+      imageUrl = postImageUploadService.uploadFile(file);
+    }
+
+    post.update(requestDto, imageUrl);
+  }
+
+  // 인증된 게시글 가져오는 메서드
+  private Post getAuthenticationPost(Long postId, UserDetailsImpl userDetails) {
+    User loginUser = authenticationHelper.checkAuthentication(userDetails);
+
+    Post post = getFindPost(postId);
+
+    boolean isAdmin = loginUser.getRole().equals(ADMIN);
+
+    // 로그인한 유저가 게시글 작성자나 관리자가 아니면 수정 불가
+    if (!isAdmin && !loginUser.getNickname().equals(post.getPostAuthor())) {
+      throw new BusinessException(HttpStatus.UNAUTHORIZED,
+          ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    }
+    return post;
+  }
+
+
 }

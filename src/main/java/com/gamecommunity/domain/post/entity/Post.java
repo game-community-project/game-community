@@ -87,4 +87,11 @@ public class Post extends TimeStamped {
     this.postUnlike = 0;
     this.user = loginUser;
   }
+
+  public void update(PostRequestDto requestDto, String postImageUrl) {
+    this.postTitle = requestDto.postTitle();
+    this.postContent = requestDto.postContent();
+    this.postImageUrl = postImageUrl;
+  }
+
 }
