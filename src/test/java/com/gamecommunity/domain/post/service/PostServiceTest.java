@@ -199,4 +199,48 @@ class PostServiceTest implements PostTest {
     assertEquals(ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION.getMessage(), ex.getMessage());
   }
 
+  @Test
+  @DisplayName("게시글 삭제 - 성공")
+  void deletePostTestSuccess() {
+
+    // given
+    Long postId = TEST_POST_ID;
+    Post post = TEST_POST;
+    UserDetailsImpl userDetails = TEST_USER_DETAILS;
+    User loginUser = userDetails.getUser();
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
+
+    given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+    // when
+    postService.deletePost(postId, userDetails);
+
+    // then
+    verify(postRepository, times(1)).delete(post);
+  }
+
+  @Test
+  @DisplayName("게시글 삭제 - 실패(로그한 유저가 게시글 작성자가 아님")
+  void deletePostTestFailureNotAuth() {
+
+    // given
+    Long postId = TEST_ANOTHER_POST_ID;
+    Post post = TEST_ANOTHER_POST;
+    UserDetailsImpl userDetails = TEST_USER_DETAILS;
+    User loginUser = userDetails.getUser();
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
+
+    given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+    // when, then
+    BusinessException ex = assertThrows(BusinessException.class, () -> {
+      postService.deletePost(postId, userDetails);
+    });
+
+    assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
+    assertEquals(ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION.getMessage(), ex.getMessage());
+  }
+
 }
