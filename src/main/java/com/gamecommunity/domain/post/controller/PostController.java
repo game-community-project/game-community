@@ -10,6 +10,7 @@ import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,6 +49,23 @@ public class PostController {
 
     PostResponseDto responseDto = postService.getPost(postId);
     return ResponseEntity.ok(ApiResponse.ok(postId + "번 게시글 조회 성공", responseDto));
+  }
+
+  // 게시글 페이징 조회
+  @GetMapping
+  public ResponseEntity<?> getPosts(
+      @RequestParam("page") int page,
+      @RequestParam("size") int size,
+      @RequestParam("sortKey") String sortKey,
+      @RequestParam("isAsc") boolean isAsc,
+      @RequestParam(name = "type", required = false) GameType type,
+      @RequestParam(name = "game", required = false) GameName game,
+      @RequestParam(name = "board") BoardName board) {
+
+    Page<PostResponseDto> responseDtoPage = postService.getPosts(
+        page - 1, size, sortKey, isAsc, type, game, board);
+
+    return ResponseEntity.ok(ApiResponse.ok("게시글 페이징 조회 성공", responseDtoPage));
   }
 
 }

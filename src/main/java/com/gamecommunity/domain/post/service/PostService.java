@@ -14,6 +14,10 @@ import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,5 +67,19 @@ public class PostService {
     return postRepository.findById(postId)
         .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
             ErrorCode.NOT_FOUND_POST_EXCEPTION));
+  }
+
+  public Page<PostResponseDto> getPosts(
+      int page, int size, String sortKey, boolean isAsc,
+      GameType type, GameName game, BoardName board) {
+    // 페이징 및 정렬처리
+    Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+    Sort sort = Sort.by(direction, sortKey);
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    Page<Post> postList = postRepository
+        .findByGameTypeAndGameNameAndBoardName(type, game, board, pageable);
+
+    return postList.map(PostResponseDto::fromEntity);
   }
 }
