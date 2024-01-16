@@ -102,6 +102,14 @@ public class PostService {
     post.update(requestDto, imageUrl);
   }
 
+  @Transactional
+  public void deletePost(Long postId, UserDetailsImpl userDetails) {
+
+    Post post = getAuthenticationPost(postId, userDetails);
+
+    postRepository.delete(post);
+  }
+
   // 인증된 게시글 가져오는 메서드
   private Post getAuthenticationPost(Long postId, UserDetailsImpl userDetails) {
     User loginUser = authenticationHelper.checkAuthentication(userDetails);
@@ -117,6 +125,5 @@ public class PostService {
     }
     return post;
   }
-
 
 }

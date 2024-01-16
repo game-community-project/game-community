@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -79,6 +80,16 @@ public class PostController {
 
     postService.updatePost(postId, requestDto, file, userDetails);
     return ResponseEntity.ok(ApiResponse.ok("게시글 수정 성공", null));
+  }
+
+  // 게시글 삭제
+  @DeleteMapping("/{postId}")
+  public ResponseEntity<?> deletePost(
+      @PathVariable Long postId,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+    postService.deletePost(postId, userDetails);
+    return ResponseEntity.ok(ApiResponse.ok("게시글 삭제 성공", null));
   }
 
 }
