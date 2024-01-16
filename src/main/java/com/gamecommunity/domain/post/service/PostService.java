@@ -1,6 +1,7 @@
 package com.gamecommunity.domain.post.service;
 
 import com.gamecommunity.domain.post.dto.PostRequestDto;
+import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.entity.Post;
 import com.gamecommunity.domain.post.repository.PostRepository;
 import com.gamecommunity.domain.user.entity.User;
@@ -8,9 +9,12 @@ import com.gamecommunity.global.config.SecurityConfig.AuthenticationHelper;
 import com.gamecommunity.global.enums.board.BoardName;
 import com.gamecommunity.global.enums.game.name.GameName;
 import com.gamecommunity.global.enums.game.type.GameType;
+import com.gamecommunity.global.exception.common.BusinessException;
+import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,5 +49,19 @@ public class PostService {
         requestDto, gameType, gameName, boardName, imageUrl, loginUser);
 
     postRepository.save(post);
+  }
+
+  public PostResponseDto getPost(Long postId) {
+
+    Post post = getFindPost(postId);
+
+    return PostResponseDto.fromEntity(post);
+  }
+
+  // 게시글 가져오는 메서드
+  public Post getFindPost(Long postId) {
+    return postRepository.findById(postId)
+        .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
+            ErrorCode.NOT_FOUND_POST_EXCEPTION));
   }
 }
