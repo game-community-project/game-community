@@ -14,4 +14,4 @@ public enum GameName {
 
   // 테스트용
   EMPTY_NAME
-  }
+}
