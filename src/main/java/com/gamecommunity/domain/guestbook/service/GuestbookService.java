@@ -55,5 +55,18 @@ public class GuestbookService {
 
   }
 
+  @Transactional
+  public void deleteComment(Long guestbookId, UserDetailsImpl userDetails) {
+
+    Guestbook guestbook = guestbookRepository.findById(guestbookId).orElseThrow(() ->
+            new BusinessException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND_GUESTBOOK_EXCEPTION));
+
+    if (!guestbook.getFromUser().getId().equals(userDetails.getId())) {
+      throw new BusinessException(HttpStatus.UNAUTHORIZED,
+              ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    }
+
+    guestbookRepository.delete(guestbook);
+  }
 
 }
