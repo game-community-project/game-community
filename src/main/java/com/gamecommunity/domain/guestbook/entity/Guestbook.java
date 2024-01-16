@@ -40,5 +40,7 @@ public class Guestbook extends TimeStamped {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   private User fromUser; // 방명록 작성자
 
-
+  public void modifyComment(String content) {
+    this.content = content;
+  }
 }

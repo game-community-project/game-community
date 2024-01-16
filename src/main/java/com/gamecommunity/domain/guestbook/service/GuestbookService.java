@@ -12,6 +12,7 @@ import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +33,25 @@ public class GuestbookService {
             new BusinessException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND_USER_EXCEPTION));
     User fromUser = userDetails.getUser();
 
-    Guestbook guestBook = createGuestBookDto.toEntity(createGuestBookDto.content(), toUser, fromUser);
+    Guestbook guestBook = createGuestBookDto.toEntity(createGuestBookDto.content(), toUser,
+            fromUser);
 
     guestbookRepository.save(guestBook);
+
+  }
+
+  @Transactional
+  public void modifyComment(Long guestbookId, String content, UserDetailsImpl userDetails) {
+
+    Guestbook guestbook = guestbookRepository.findById(guestbookId).orElseThrow(() ->
+            new BusinessException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND_GUESTBOOK_EXCEPTION));
+
+    if (!guestbook.getFromUser().getId().equals(userDetails.getId())) {
+      throw new BusinessException(HttpStatus.UNAUTHORIZED,
+              ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    }
+
+    guestbook.modifyComment(content);
 
   }
 
