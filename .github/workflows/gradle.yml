@@ -61,6 +61,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
           context: .
+          build-args: DB_URL=${{ secrets.PROD_DB_URL }}
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
