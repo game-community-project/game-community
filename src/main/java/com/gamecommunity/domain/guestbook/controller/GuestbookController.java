@@ -47,7 +47,7 @@ public class GuestbookController {
   ) {
     guestbookService.modifyComment(guestbookId, modifyGuestbookDto.content(), userDetails);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok("방명록 수정 성공", null));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.ok("방명록 수정 성공", null));
   }
 
   // 방명록 댓글 삭제
@@ -58,7 +58,7 @@ public class GuestbookController {
   ) {
     guestbookService.deleteComment(guestbookId, userDetails);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok("방명록 삭제 성공", null));
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.ok("방명록 삭제 성공", null));
   }
 
 }
