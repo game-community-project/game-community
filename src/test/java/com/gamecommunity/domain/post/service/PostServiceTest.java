@@ -145,4 +145,58 @@ class PostServiceTest implements PostTest {
     assertEquals(postPage.getContent().size(), result.getContent().size());
   }
 
+  @Test
+  @DisplayName("게시글 수정 - 성공")
+  void updatePostTestSuccess() throws IOException {
+
+    // given
+    Long postId = TEST_POST_ID;
+    Post post = TEST_POST;
+    MultipartFile file = mock(MultipartFile.class);
+    UserDetailsImpl userDetails = TEST_USER_DETAILS;
+    User loginUser = userDetails.getUser();
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
+
+    PostRequestDto requestDto = new PostRequestDto(
+        TEST_ANOTHER_POST.getPostTitle(), TEST_ANOTHER_POST.getPostContent());
+
+    given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+    // when
+    postService.updatePost(postId, requestDto, file, userDetails);
+
+    // then
+    assertEquals(TEST_ANOTHER_POST.getPostTitle(), post.getPostTitle());
+    assertEquals(TEST_ANOTHER_POST.getPostContent(), post.getPostContent());
+  }
+
+  @Test
+  @DisplayName("게시글 수정 - 실패(로그한 유저가 게시글 작성자가 아님")
+  void updatePostTestFailureNotAuth() throws IOException {
+
+    // given
+    Long postId = TEST_ANOTHER_POST_ID;
+    Post post = TEST_ANOTHER_POST;
+    MultipartFile file = mock(MultipartFile.class);
+
+    UserDetailsImpl userDetails = TEST_USER_DETAILS;
+    User loginUser = userDetails.getUser();
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
+
+    PostRequestDto requestDto = new PostRequestDto(
+        TEST_ANOTHER_POST.getPostTitle(), TEST_ANOTHER_POST.getPostContent());
+
+    given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+    // when, then
+    BusinessException ex = assertThrows(BusinessException.class, () -> {
+      postService.updatePost(postId, requestDto, file, userDetails);
+    });
+
+    assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
+    assertEquals(ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION.getMessage(), ex.getMessage());
+  }
+
 }
