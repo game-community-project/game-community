@@ -56,4 +56,5 @@ public interface UserTest {
       .build();
 
   UserDetailsImpl TEST_USER_DETAILS = new UserDetailsImpl(TEST_USER);
+  UserDetailsImpl TEST_ANOTHER_USER_DETAILS = new UserDetailsImpl(TEST_ANOTHER_USER);
 }
