@@ -1,9 +1,7 @@
 version: "3"
 services:
   spring-boot-app:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: sxxdxh2/game:latest
     container_name: gamecommunity
     ports:
       - "8080:8080"
