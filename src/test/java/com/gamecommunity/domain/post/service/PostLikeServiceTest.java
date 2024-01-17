@@ -12,6 +12,7 @@ import com.gamecommunity.domain.post.repository.PostLikeRepository;
 import com.gamecommunity.domain.post.repository.PostRepository;
 import com.gamecommunity.domain.test.PostTest;
 import com.gamecommunity.domain.user.entity.User;
+import com.gamecommunity.global.config.SecurityConfig.AuthenticationHelper;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
@@ -37,6 +38,8 @@ class PostLikeServiceTest implements PostTest {
   private PostRepository postRepository;
   @Mock
   private PostService postService;
+  @Mock
+  private AuthenticationHelper authenticationHelper;
 
   // islike가 true : 좋아요, false : 싫어요
 
@@ -45,11 +48,13 @@ class PostLikeServiceTest implements PostTest {
   void addLikeTestSuccess() {
 
     // given
-    Long postId = TEST_POST_ID;
-    Post post = TEST_POST;
-    UserDetailsImpl userDetails = TEST_ANOTHER_USER_DETAILS;
+    Long postId = TEST_ANOTHER_POST_ID;
+    Post post = TEST_ANOTHER_POST;
+    UserDetailsImpl userDetails = TEST_USER_DETAILS;
     User loginUser = userDetails.getUser();
     Boolean islike = true;
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
 
     given(postService.getFindPost(postId)).willReturn(post);
 
@@ -72,7 +77,10 @@ class PostLikeServiceTest implements PostTest {
     Long postId = TEST_POST_ID;
     Post post = TEST_POST;
     UserDetailsImpl userDetails = TEST_USER_DETAILS;
+    User loginUser = userDetails.getUser();
     Boolean islike = true;
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
 
     given(postService.getFindPost(postId)).willReturn(post);
 
@@ -95,6 +103,8 @@ class PostLikeServiceTest implements PostTest {
     UserDetailsImpl userDetails = TEST_ANOTHER_USER_DETAILS;
     User loginUser = userDetails.getUser();
     Boolean islike = true;
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
 
     given(postService.getFindPost(postId)).willReturn(post);
     // 내역이 이미 존재하도록 설정
