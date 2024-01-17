@@ -6,17 +6,17 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - spring.datasource.url=jdbc:mysql://game.cvkwsm4coksx.eu-north-1.rds.amazonaws.com:3306/game
-      - username=root
-      - password=pwpwpwpw
-      - gmail=sxxdxh2@gmail.com
-      - mail_password=kpeimkojrfmclolu
-      - access-key=AKIAYH7XNSQLLL3CIPXT
-      - secret-key=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
-      - jwt.secret.key=and0LXNlY3JldC1rZXktZm9yLW5hdGVhbXN0b3JlLW5pY2UtdmFsdWUh
-      - admin.token=AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC
-      - kakao.rest_api_key=36886f964d20d42046aa8fd8893d3eb9
-      - kakao.redirect_uri=http://51.21.48.160/api/users/kakao/callback
+      - spring.datasource.url=${spring.datasource.url}
+      - username=${username}
+      - password=${password}
+      - gmail=${gmail}
+      - mail_password=${mail_password}
+      - access-key=${access-key}
+      - secret-key=${secret-key}
+      - jwt.secret.key=${jwt.secret.key}
+      - admin.token=${admin.token}
+      - kakao.rest_api_key=${kakao.rest_api_key}
+      - kakao.redirect_uri=${kakao.redirect_uri}
     depends_on:
       - redis
   redis:
