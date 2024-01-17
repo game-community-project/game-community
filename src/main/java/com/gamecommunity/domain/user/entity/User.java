@@ -1,6 +1,8 @@
 package com.gamecommunity.domain.user.entity;
 
 
+import com.gamecommunity.domain.guestbook.entity.Guestbook;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,8 +10,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,6 +61,8 @@ public class User {
   @Enumerated(value = EnumType.STRING)
   private UserRoleEnum role;
 
+  @OneToMany(mappedBy = "toUser", cascade = CascadeType.REMOVE)
+  private List<Guestbook> guestbookList;
 
   public void updatePassword(String password) {
     this.password = password;
