@@ -53,7 +53,9 @@ public class PostLikeService {
   }
 
   @Transactional
-  public void cancelLike(Long postId, Boolean isLike, User loginUser) {
+  public void cancelLike(Long postId, Boolean isLike, UserDetailsImpl userDetails) {
+
+    User loginUser = authenticationHelper.checkAuthentication(userDetails);
 
     Post post = postService.getFindPost(postId);
 
@@ -68,7 +70,7 @@ public class PostLikeService {
     postRepository.save(post);
   }
 
-  private void updatePostLikePlus(Post post, Boolean isLike) {
+  public void updatePostLikePlus(Post post, Boolean isLike) {
     if (isLike) {
       post.setPostLike(post.getPostLike() + 1);
     } else {
@@ -76,7 +78,7 @@ public class PostLikeService {
     }
   }
 
-  private void updatePostLikeMinus(Post post, Boolean isLike) {
+  public void updatePostLikeMinus(Post post, Boolean isLike) {
     if (isLike) {
       post.setPostLike(post.getPostLike() - 1);
     } else {

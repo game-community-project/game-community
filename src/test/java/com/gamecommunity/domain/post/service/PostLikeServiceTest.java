@@ -1,8 +1,11 @@
 package com.gamecommunity.domain.post.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -117,5 +120,35 @@ class PostLikeServiceTest implements PostTest {
 
     assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
     assertEquals(ErrorCode.DUPLICATED_LIKE_EXCEPTION.getMessage(), ex.getMessage());
+  }
+
+  @Test
+  @DisplayName("게시글 좋아요 또는 싫어요 취소 - 성공")
+  void cancelLikeTestSuccess() {
+
+    // given
+    Long postId = TEST_POST_ID;
+    Post post = TEST_POST;
+    UserDetailsImpl userDetails = TEST_USER_DETAILS;
+    User loginUser = userDetails.getUser();
+    Boolean islike = true;
+    PostLike postLike = TEST_POSTLIKE;
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
+
+    given(postService.getFindPost(postId)).willReturn(post);
+
+    given(postLikeRepository.findByUserAndIslikeAndPost(loginUser, islike, post)).willReturn(
+        postLike);
+
+    // when
+    postLikeService.cancelLike(postId, islike, userDetails);
+
+    // then
+    verify(postLikeRepository, times(1)).delete(postLike);
+    verify(postRepository).save(post);
+
+    // 좋아요 수가 1 감소했으므로 assertEquals에 1을 더해야 합니다.
+    assertEquals(TEST_POST_LIKE - 1, post.getPostLike());
   }
 }

@@ -3,6 +3,7 @@ package com.gamecommunity.domain.test;
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.entity.Post;
+import com.gamecommunity.domain.post.entity.PostLike;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.enums.board.BoardName;
 import com.gamecommunity.global.enums.game.name.GameName;
@@ -71,5 +72,12 @@ public interface PostTest extends UserTest {
       .report(TEST_REPORT)
       .postLike(TEST_POST_LIKE)
       .postUnlike(TEST_POST_Unlike)
+      .build();
+
+  PostLike TEST_POSTLIKE = PostLike.builder()
+      .postLikeId(TEST_POST_ID)
+      .islike(true)
+      .post(TEST_POST)
+      .user(TEST_ANOTHER_USER)
       .build();
 }

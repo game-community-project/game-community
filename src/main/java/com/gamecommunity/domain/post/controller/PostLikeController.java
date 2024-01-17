@@ -47,9 +47,7 @@ public class PostLikeController {
       @RequestParam Boolean isLike,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-    User loginUser = userDetails.getUser();
-
-    postLikeService.cancelLike(postId, isLike,loginUser);
+    postLikeService.cancelLike(postId, isLike, userDetails);
     String message;
 
     if (isLike) {
