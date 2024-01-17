@@ -12,6 +12,7 @@ import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -51,11 +52,35 @@ public class PostLikeService {
     postRepository.save(post);
   }
 
+  @Transactional
+  public void cancelLike(Long postId, Boolean isLike, User loginUser) {
+
+    Post post = postService.getFindPost(postId);
+
+    // 좋아요 또는 싫어요 내역이 없으면 예외발생
+    PostLike postLike = postLikeRepository.findByUserAndIslikeAndPost(loginUser, isLike, post);
+
+    postLikeRepository.delete(postLike);
+
+    // 좋아요 또는 싫어요 수 감소
+    updatePostLikeMinus(post, isLike);
+
+    postRepository.save(post);
+  }
+
   private void updatePostLikePlus(Post post, Boolean isLike) {
     if (isLike) {
       post.setPostLike(post.getPostLike() + 1);
     } else {
       post.setPostUnlike(post.getPostUnlike() + 1);
+    }
+  }
+
+  private void updatePostLikeMinus(Post post, Boolean isLike) {
+    if (isLike) {
+      post.setPostLike(post.getPostLike() - 1);
+    } else {
+      post.setPostUnlike(post.getPostUnlike() - 1);
     }
   }
 
