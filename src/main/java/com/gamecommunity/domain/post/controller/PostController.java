@@ -3,6 +3,7 @@ package com.gamecommunity.domain.post.controller;
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.service.PostService;
+import com.gamecommunity.global.aop.PostTimer;
 import com.gamecommunity.global.aop.Timer;
 import com.gamecommunity.global.enums.board.BoardName;
 import com.gamecommunity.global.enums.game.name.GameName;
@@ -34,6 +35,7 @@ public class PostController {
 
   // 게시글 작성
   @Timer
+  @PostTimer
   @PostMapping
   public ResponseEntity<?> createPost(
       @RequestPart(value = "requestDto") PostRequestDto requestDto,
