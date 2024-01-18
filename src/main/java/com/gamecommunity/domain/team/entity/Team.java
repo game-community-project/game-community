@@ -1,6 +1,7 @@
 package com.gamecommunity.domain.team.entity;
 
 import com.gamecommunity.domain.team.dto.TeamRequestDto;
+import com.gamecommunity.domain.teamuser.entity.TeamUser;
 import com.gamecommunity.global.auditing.TimeStamped;
 import com.gamecommunity.global.enums.game.name.GameName;
 import jakarta.persistence.CascadeType;
@@ -35,6 +36,7 @@ public class Team extends TimeStamped {
 
   @Column(nullable = false)
   private Long teamAdminId;
+
   @Column(nullable = false, unique = true)
   private String teamName;
 
@@ -45,8 +47,8 @@ public class Team extends TimeStamped {
   @Enumerated(EnumType.STRING)
   private GameName gameName;
 
-//  @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//  private List<TeamUser> teamUsers = new ArrayList<>();
+  @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private List<TeamUser> teamUsers = new ArrayList<>();
 
   public Team(Long adminId, TeamRequestDto teamRequestDto) {
     this.teamAdminId = adminId;

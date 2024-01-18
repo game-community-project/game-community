@@ -41,7 +41,6 @@ public class TeamService {
   }
 
   public List<TeamResponseDto> getTeamsByGameName(GameName gameName) {
-    List<TeamResponseDto> teamList = new ArrayList<>();
     for (GameName game : GameName.values()) {
       if (game.equals(gameName)) {
         List<TeamResponseDto> teamResponseDtos = teamRepository.findAllByGameName(game).stream()
@@ -54,7 +53,7 @@ public class TeamService {
 
   public List<TeamResponseDto> getTeamsByUser(User user) {
     List<TeamResponseDto> teamResponseDtos = teamUserRepository.findAllByUserId(user.getId())
-        .stream() // TeamUser Entity가 리스트로 나옴
+        .stream()
         .map(Team -> new TeamResponseDto(Team.getTeam())).toList();
 
     return teamResponseDtos;
@@ -129,3 +128,4 @@ public class TeamService {
     teamUserRepository.delete(teamUser);
   }
 }
+
