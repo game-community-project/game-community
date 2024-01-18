@@ -14,6 +14,7 @@ import com.gamecommunity.global.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,33 @@ public class CommentService {
     Comment comment = new Comment(user, post, commentRequestDto);
     commentRepository.save(comment);
     return new CommentResponseDto(comment);
+  }
+
+  @Transactional
+  public CommentResponseDto updateComment(User user, Long commentId,
+      CommentRequestDto commentRequestDto) {
+    Comment comment = commentRepository.findByCommentId(commentId).orElseThrow(() ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT));
+    if (!user.getId().equals(comment.getUser().getId())) {
+      throw new BusinessException(HttpStatus.BAD_REQUEST,
+          ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    }
+    comment.update(commentRequestDto);
+    return new CommentResponseDto(comment);
+
+  }
+
+
+  public void deleteComment(User user, Long commentId) {
+    Comment comment = commentRepository.findByCommentId(commentId).orElseThrow(() ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT));
+
+    if (!user.getId().equals(comment.getUser().getId())) {
+      throw new BusinessException(HttpStatus.BAD_REQUEST,
+          ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    }
+
+    commentRepository.delete(comment);
   }
 }
 
