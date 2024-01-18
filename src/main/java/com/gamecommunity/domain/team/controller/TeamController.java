@@ -38,7 +38,7 @@ public class TeamController {
 
 
   @GetMapping
-  public ResponseEntity<ApiResponse<Page<TeamResponseDto>>> getTeam(
+  public ResponseEntity<ApiResponse<Page<TeamResponseDto>>> getTeams(
       @RequestParam("page") int page,
       @RequestParam("size") int size,
       @RequestParam("sortBy") String sortBy,
@@ -50,7 +50,7 @@ public class TeamController {
   }
 
   @GetMapping("/users")
-  public ResponseEntity<ApiResponse<Page<TeamResponseDto>>> getTeam(
+  public ResponseEntity<ApiResponse<Page<TeamResponseDto>>> getTeams(
       @RequestParam("page") int page,
       @RequestParam("size") int size,
       @RequestParam("sortBy") String sortBy,
