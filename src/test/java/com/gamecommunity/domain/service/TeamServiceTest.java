@@ -81,14 +81,13 @@ class TeamServiceTest implements TeamUserTest {
     given(teamRepository.findAllByGameName(gameName)).willReturn(teamList);
 
     // When
-    Map<GameName, List<TeamResponseDto>> result = teamService.getTeamsByGame();
+    List<TeamResponseDto> result = teamService.getTeamsByGameName(gameName);
 
     // Then
-    List<TeamResponseDto> leagueOfLegendTeams = result.get(GameName.LEAGUE_OF_LEGEND);
-    assertNotNull(leagueOfLegendTeams);
-    assertFalse(leagueOfLegendTeams.isEmpty());
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
 
-    TeamResponseDto firstTeamResponseDto = leagueOfLegendTeams.get(0);
+    TeamResponseDto firstTeamResponseDto = result.get(0);
     assertEquals(team1.getTeamName(), firstTeamResponseDto.teamName());
     assertEquals(team1.getTeamIntroduction(), firstTeamResponseDto.teamIntroduction());
   }
