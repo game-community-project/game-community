@@ -1,6 +1,7 @@
 package com.gamecommunity.domain.guestbook.controller;
 
 import com.gamecommunity.domain.guestbook.dto.CreateGuestbookDto;
+import com.gamecommunity.domain.guestbook.dto.GuestbookDto;
 import com.gamecommunity.domain.guestbook.dto.ModifyGuestbookDto;
 import com.gamecommunity.domain.guestbook.service.GuestbookService;
 import com.gamecommunity.global.response.ApiResponse;
@@ -8,6 +9,7 @@ import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,14 +45,16 @@ public class GuestbookController {
 
   // 방명록 조회
   @GetMapping("/{toUserId}/guestbooks")
-  public ResponseEntity<ApiResponse> getComment(
+  public ResponseEntity<ApiResponse<Page<GuestbookDto>>> getComment(
+          @RequestParam("page") int page,
+          @RequestParam("size") int size,
+          @RequestParam("sortBy") String sortBy,
+          @RequestParam("isAsc") boolean isAsc,
           @PathVariable Long toUserId
   ) {
+    Page<GuestbookDto> guestbookDtoList = guestbookService.getComment(page-1, size,sortBy,isAsc,toUserId);
 
-    guestbookService.getComment(toUserId);
-
-    return ResponseEntity.status(HttpStatus.OK)
-            .body(ApiResponse.ok("방명록 조회 성공", guestbookService.getComment(toUserId)));
+    return ResponseEntity.ok(ApiResponse.ok("방명록 조회 성공", guestbookDtoList));
   }
 
   // 방명록 댓글 수정
