@@ -9,7 +9,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-
 import com.gamecommunity.domain.team.dto.TeamRequestDto;
 import com.gamecommunity.domain.team.dto.TeamResponseDto;
 import com.gamecommunity.domain.team.entity.Team;
@@ -25,7 +24,6 @@ import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,10 +72,8 @@ class TeamServiceTest implements TeamUserTest {
     Team team1 = TEST_TEAM;
     Team team2 = TEST_TEAM;
     GameName gameName = GameName.LEAGUE_OF_LEGEND;
-    // 가상의 데이터 리스트 생성
     List<Team> teamList = Arrays.asList(team1, team2);
 
-// Mock 객체의 findAllByGameName 메서드 호출에 대한 동작 설정
     given(teamRepository.findAllByGameName(gameName)).willReturn(teamList);
 
     // When
@@ -130,10 +126,10 @@ class TeamServiceTest implements TeamUserTest {
     given(teamRepository.findByTeamId(teamId)).willReturn(Optional.of(team));
 
     // when
-    teamService.updateTeam(loginUser, teamId,teamRequestDto);
+    teamService.updateTeam(loginUser, teamId, teamRequestDto);
 
     // Then
-    assertEquals(team.getTeamName(),TEST_ANOTHER_TEAM.getTeamName());
+    assertEquals(team.getTeamName(), TEST_ANOTHER_TEAM.getTeamName());
   }
 
   @Test
@@ -183,8 +179,6 @@ class TeamServiceTest implements TeamUserTest {
   void deleteTeamFailSuccess() {
 
     // given
-    TeamRequestDto teamRequestDto = new TeamRequestDto(TEST_ANOTHER_TEAM_NAME,
-        TEST_ANOTHER_TEAM_INTRODUCTION, TEST_ANOTHER_GAME_NAME);
     Long teamId = TEST_TEAM_ID;
     User loginUser = TEST_ANOTHER_USER;
     Team team = TEST_TEAM;
@@ -200,7 +194,4 @@ class TeamServiceTest implements TeamUserTest {
     assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
     assertEquals(ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION.getMessage(), ex.getMessage());
   }
-
-
-
 }
