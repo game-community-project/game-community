@@ -51,4 +51,3 @@ public class Comment extends TimeStamped {
     this.content = requestDto.content();
   }
 }
-

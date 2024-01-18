@@ -12,6 +12,10 @@ import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,5 +63,21 @@ public class CommentService {
 
     commentRepository.delete(comment);
   }
-}
 
+  public Page<CommentResponseDto> getComments(
+      int page, int size, String sortKey, boolean isAsc,
+      Long postId) {
+    Post post = postRepository.findByPostId(postId).orElseThrow(() ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_POST_EXCEPTION));
+
+    // 페이징 및 정렬처리
+    Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+    Sort sort = Sort.by(direction, sortKey);
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    Page<Comment> commentList = commentRepository
+        .findAllByPost(post, pageable);
+
+    return commentList.map(CommentResponseDto::new);
+  }
+}

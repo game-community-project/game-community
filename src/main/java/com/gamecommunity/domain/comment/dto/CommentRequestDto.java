@@ -11,4 +11,3 @@ public record CommentRequestDto(
     this(comment.getContent());
   }
 }
-
