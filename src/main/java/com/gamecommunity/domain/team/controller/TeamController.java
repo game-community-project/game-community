@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,9 +37,11 @@ public class TeamController {
   }
 
   @GetMapping
-  public ResponseEntity<ApiResponse<Map<GameName, List<TeamResponseDto>>>> getTeam() {
-    Map<GameName, List<TeamResponseDto>> teamMap = teamService.getTeamsByGame();
-    return ResponseEntity.ok(ApiResponse.ok("게임 별로 속해 있는 팀 목록 조회 성공", teamMap));
+  public ResponseEntity<ApiResponse<List<TeamResponseDto>>> getTeam(
+      @RequestParam("gameName") GameName gameName
+  ) {
+    List<TeamResponseDto> teamResponseDtos = teamService.getTeamsByGameName(gameName);
+    return ResponseEntity.ok(ApiResponse.ok("게임 별로 속해 있는 팀 목록 조회 성공", teamResponseDtos));
   }
 
   @GetMapping("/users")

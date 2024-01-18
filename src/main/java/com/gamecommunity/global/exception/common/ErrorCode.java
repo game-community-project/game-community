@@ -34,6 +34,7 @@ public enum ErrorCode {
   NOT_FOUND_TEAM_EXCEPTION("해당 팀이 존재하지 않습니다."),
   NOT_EQUALS_TEAM_ADMIN("팀의 관리자가 아닙니다."),
   NOT_FOUND_TEAM_USER("팀에 유저가 속해있지 않습니다."),
+  NOT_FOUND_GAME("해당 게임은 존재하지 않습니다."),
 
   // comment
   NOT_FOUND_COMMENT("해당 댓글을 찾을 수 없습니다.");

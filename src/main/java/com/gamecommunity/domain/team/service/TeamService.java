@@ -13,6 +13,7 @@ import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,17 +37,19 @@ public class TeamService {
   public void createTeam(User user, TeamRequestDto teamRequestDto) {
     Team team = new Team(user.getId(), teamRequestDto);
     teamRepository.save(team);
-    addAdminUserToTeam(user,team);
+    addAdminUserToTeam(user, team);
   }
 
-  public Map<GameName, List<TeamResponseDto>> getTeamsByGame() {
-    Map<GameName, List<TeamResponseDto>> teamMap = new HashMap<>();
+  public List<TeamResponseDto> getTeamsByGameName(GameName gameName) {
+    List<TeamResponseDto> teamList = new ArrayList<>();
     for (GameName game : GameName.values()) {
-      List<TeamResponseDto> teamResponseDtos = teamRepository.findAllByGameName(game).stream()
-          .map(TeamResponseDto::new).toList();
-      teamMap.put(game, teamResponseDtos);
+      if (game.equals(gameName)) {
+        List<TeamResponseDto> teamResponseDtos = teamRepository.findAllByGameName(game).stream()
+            .map(TeamResponseDto::new).toList();
+        return teamResponseDtos;
+      }
     }
-    return teamMap;
+    throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_GAME);
   }
 
   public List<TeamResponseDto> getTeamsByUser(User user) {
@@ -59,11 +62,12 @@ public class TeamService {
 
   public void deleteTeam(User user, Long teamId) {
 
-    Team team = teamRepository.findByTeamId(teamId).orElseThrow( () ->
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
 
-    if(!user.getId().equals(team.getTeamAdminId())){
-      throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    if (!user.getId().equals(team.getTeamAdminId())) {
+      throw new BusinessException(HttpStatus.BAD_REQUEST,
+          ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
 
     teamRepository.delete(team);
@@ -72,11 +76,12 @@ public class TeamService {
   @Transactional
   public void updateTeam(User user, Long teamId, TeamRequestDto teamRequestDto) {
 
-    Team team = teamRepository.findByTeamId(teamId).orElseThrow( () ->
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
 
-    if(!user.getId().equals(team.getTeamAdminId())){
-      throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    if (!user.getId().equals(team.getTeamAdminId())) {
+      throw new BusinessException(HttpStatus.BAD_REQUEST,
+          ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
 
     team.update(teamRequestDto);
@@ -84,41 +89,42 @@ public class TeamService {
 
   public void addUserToTeam(User user, Long teamId, Long invitedUserId) {
 
-    Team team = teamRepository.findByTeamId(teamId).orElseThrow( () ->
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
 
-    if(!user.getId().equals(team.getTeamAdminId())){
-      throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    if (!user.getId().equals(team.getTeamAdminId())) {
+      throw new BusinessException(HttpStatus.BAD_REQUEST,
+          ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
 
     User invitedUser = userRepository.findById(invitedUserId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
-    TeamUser teamUser = new TeamUser(team,invitedUser);
+    TeamUser teamUser = new TeamUser(team, invitedUser);
 
     teamUserRepository.save(teamUser);
   }
+
   public void addAdminUserToTeam(User user, Team team) {
-    TeamUser teamUser = new TeamUser(team,user);
+    TeamUser teamUser = new TeamUser(team, user);
     teamUserRepository.save(teamUser);
   }
 
   public void deleteUserFromTeam(User user, Long teamId, Long userId) {
 
-    Team team = teamRepository.findByTeamId(teamId).orElseThrow( () ->
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
 
-    if(!user.getId().equals(team.getTeamAdminId())){
-      throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    if (!user.getId().equals(team.getTeamAdminId())) {
+      throw new BusinessException(HttpStatus.BAD_REQUEST,
+          ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
 
     User deletedUser = userRepository.findById(userId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
-
-
     TeamUser teamUser = teamUserRepository.findByTeamAndUser(team, deletedUser).orElseThrow(() ->
-        new BusinessException(HttpStatus.BAD_REQUEST,ErrorCode.NOT_FOUND_TEAM_USER));
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_USER));
 
     teamUserRepository.delete(teamUser);
   }
