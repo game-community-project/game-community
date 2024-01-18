@@ -1,6 +1,7 @@
 package com.gamecommunity.domain.guestbook.service;
 
 import com.gamecommunity.domain.guestbook.dto.CreateGuestbookDto;
+import com.gamecommunity.domain.guestbook.dto.GuestbookDto;
 import com.gamecommunity.domain.guestbook.entity.Guestbook;
 import com.gamecommunity.domain.guestbook.repository.GuestbookRepository;
 import com.gamecommunity.domain.user.entity.User;
@@ -37,6 +38,17 @@ public class GuestbookService {
             fromUser);
 
     guestbookRepository.save(guestBook);
+
+  }
+
+  public GuestbookDto getComment(
+          Long toUserId
+  ) {
+    User toUser = userRepository.findById(toUserId).orElseThrow(() ->
+            new BusinessException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+
+    return GuestbookDto.from(toUser);
 
   }
 
