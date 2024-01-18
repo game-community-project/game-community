@@ -55,6 +55,7 @@ public class Team extends TimeStamped {
     this.teamName = teamRequestDto.name();
     this.teamIntroduction = teamRequestDto.introduction();
     this.gameName = teamRequestDto.gameName();
+    this.teamUsers = new ArrayList<>();
   }
 
   public void update(TeamRequestDto teamRequestDto) {
