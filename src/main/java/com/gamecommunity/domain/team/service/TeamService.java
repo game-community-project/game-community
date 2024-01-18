@@ -8,15 +8,19 @@ import com.gamecommunity.domain.teamuser.repository.TeamUserRepository;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.domain.user.repository.UserRepository;
 import com.gamecommunity.global.enums.game.name.GameName;
+import com.gamecommunity.global.exception.common.BusinessException;
+import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Service
@@ -50,5 +54,30 @@ public class TeamService {
         .map(Team -> new TeamResponseDto(Team.getTeam())).toList();
 
     return teamResponseDtos;
+  }
+
+  public void deleteTeam(User user, Long teamId) {
+
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow( () ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
+
+    if(!user.getId().equals(team.getTeamAdminId())){
+      throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    }
+
+    teamRepository.delete(team);
+  }
+
+  @Transactional
+  public void updateTeam(User user, Long teamId, TeamRequestDto teamRequestDto) {
+
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow( () ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
+
+    if(!user.getId().equals(team.getTeamAdminId())){
+      throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
+    }
+
+    team.update(teamRequestDto);
   }
 }
