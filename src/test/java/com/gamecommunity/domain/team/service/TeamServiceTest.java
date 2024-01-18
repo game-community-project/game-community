@@ -1,4 +1,4 @@
-package com.gamecommunity.domain.service;
+package com.gamecommunity.domain.team.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
