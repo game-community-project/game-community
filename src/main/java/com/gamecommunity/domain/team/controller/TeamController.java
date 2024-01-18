@@ -32,27 +32,27 @@ public class TeamController {
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody TeamRequestDto teamRequestDto) {
     teamService.createTeam(userDetails.getUser(), teamRequestDto);
-    return ResponseEntity.ok(ApiResponse.ok("그룹 생성 성공", null));
+    return ResponseEntity.ok(ApiResponse.ok("팀 생성 성공", null));
   }
 
   @GetMapping
   public ResponseEntity<ApiResponse<Map<GameName, List<TeamResponseDto>>>> getTeam() {
     Map<GameName, List<TeamResponseDto>> teamMap = teamService.getTeamsByGame();
-    return ResponseEntity.ok(ApiResponse.ok("게임 별로 속해 있는 그룹 목록 조회 성공", teamMap));
+    return ResponseEntity.ok(ApiResponse.ok("게임 별로 속해 있는 팀 목록 조회 성공", teamMap));
   }
 
   @GetMapping("/users")
   public ResponseEntity<ApiResponse<List<TeamResponseDto>>> getTeam(
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
     List<TeamResponseDto> teamResponseDtoList = teamService.getTeamsByUser(userDetails.getUser());
-    return ResponseEntity.ok(ApiResponse.ok("유저가 속한 그룹 목록 조회 성공", teamResponseDtoList));
+    return ResponseEntity.ok(ApiResponse.ok("유저가 속한 팀 조회 성공", teamResponseDtoList));
   }
 
   @DeleteMapping("/{teamId}")
   public ResponseEntity<ApiResponse<Void>> deleteTeam(
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId) {
     teamService.deleteTeam(userDetails.getUser(), teamId);
-    return ResponseEntity.ok(ApiResponse.ok("그룹 삭제 성공", null));
+    return ResponseEntity.ok(ApiResponse.ok("팀 삭제 성공", null));
   }
 
   @PatchMapping("/{teamId}")
@@ -60,6 +60,22 @@ public class TeamController {
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId,
       @RequestBody TeamRequestDto teamRequestDto) {
     teamService.updateTeam(userDetails.getUser(), teamId, teamRequestDto);
-    return ResponseEntity.ok(ApiResponse.ok("그룹 수정 성공", null));
+    return ResponseEntity.ok(ApiResponse.ok("팀 수정 성공", null));
+  }
+
+  @PostMapping("/teams/{teamId}/users/{userId}")
+  public ResponseEntity<ApiResponse<Void>> addUserToTeam(
+      @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId,
+      @PathVariable Long userId) {
+    teamService.addUserToTeam(userDetails.getUser(), teamId, userId);
+    return ResponseEntity.ok(ApiResponse.ok("팀에 유저 추가 성공", null));
+  }
+
+  @DeleteMapping("/teams/{teamId}/users/{userId}")
+  public ResponseEntity<ApiResponse<Void>> DeleteUserFromTeam(
+      @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId,
+      @PathVariable Long userId) {
+    teamService.deleteUserFromTeam(userDetails.getUser(), teamId, userId);
+    return ResponseEntity.ok(ApiResponse.ok("팀에 유저 삭제 성공", null));
   }
 }
