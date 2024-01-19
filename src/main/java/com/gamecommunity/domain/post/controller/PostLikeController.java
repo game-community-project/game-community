@@ -2,6 +2,7 @@ package com.gamecommunity.domain.post.controller;
 
 import com.gamecommunity.domain.post.service.PostLikeService;
 import com.gamecommunity.domain.user.entity.User;
+import com.gamecommunity.global.aop.Timer;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class PostLikeController {
   private final PostLikeService postLikeService;
 
   // 좋아요 싫어요 하기
+  @Timer
   @PostMapping
   public ResponseEntity<?> addLike(
       @PathVariable Long postId,
@@ -41,6 +43,7 @@ public class PostLikeController {
   }
 
   // 좋아요 싫어요 취소하기
+  @Timer
   @DeleteMapping
   public ResponseEntity<?> cancelLike(
       @PathVariable Long postId,

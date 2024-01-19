@@ -3,6 +3,8 @@ package com.gamecommunity.domain.post.controller;
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.service.PostService;
+import com.gamecommunity.global.aop.PostTimer;
+import com.gamecommunity.global.aop.Timer;
 import com.gamecommunity.global.enums.board.BoardName;
 import com.gamecommunity.global.enums.game.name.GameName;
 import com.gamecommunity.global.enums.game.type.GameType;
@@ -32,6 +34,8 @@ public class PostController {
   private final PostService postService;
 
   // 게시글 작성
+  @Timer
+  @PostTimer
   @PostMapping
   public ResponseEntity<?> createPost(
       @RequestPart(value = "requestDto") PostRequestDto requestDto,
@@ -46,6 +50,7 @@ public class PostController {
   }
 
   // 게시글 단건 조회
+  @Timer
   @GetMapping("/{postId}")
   public ResponseEntity<?> getPost(@PathVariable Long postId) {
 
@@ -54,6 +59,7 @@ public class PostController {
   }
 
   // 게시글 페이징 조회
+  @Timer
   @GetMapping
   public ResponseEntity<?> getPosts(
       @RequestParam("page") int page,
@@ -71,6 +77,7 @@ public class PostController {
   }
 
   // 게시글 수정
+  @Timer
   @PatchMapping("/{postId}")
   public ResponseEntity<?> updatePost(
       @PathVariable Long postId,
@@ -83,6 +90,7 @@ public class PostController {
   }
 
   // 게시글 삭제
+  @Timer
   @DeleteMapping("/{postId}")
   public ResponseEntity<?> deletePost(
       @PathVariable Long postId,

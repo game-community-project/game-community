@@ -4,6 +4,7 @@ import com.gamecommunity.domain.guestbook.dto.CreateGuestbookDto;
 import com.gamecommunity.domain.guestbook.dto.GuestbookDto;
 import com.gamecommunity.domain.guestbook.dto.ModifyGuestbookDto;
 import com.gamecommunity.domain.guestbook.service.GuestbookService;
+import com.gamecommunity.global.aop.Timer;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -31,6 +32,7 @@ public class GuestbookController {
   private final GuestbookService guestbookService;
 
   // 방명록 댓글 작성
+  @Timer
   @PostMapping("/{toUserId}/guestbooks")
   public ResponseEntity<ApiResponse> createComment(
           @PathVariable Long toUserId,
@@ -58,6 +60,7 @@ public class GuestbookController {
   }
 
   // 방명록 댓글 수정
+  @Timer
   @PatchMapping("/{toUserId}/guestbooks/{guestbookId}")
   public ResponseEntity<ApiResponse> modifyComment(
           @PathVariable Long guestbookId,
@@ -70,6 +73,7 @@ public class GuestbookController {
   }
 
   // 방명록 댓글 삭제
+  @Timer
   @DeleteMapping("/{toUserId}/guestbooks/{guestbookId}")
   public ResponseEntity<ApiResponse> deleteComment(
           @PathVariable Long guestbookId,
