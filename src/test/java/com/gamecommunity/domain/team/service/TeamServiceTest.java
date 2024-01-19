@@ -1,23 +1,22 @@
 package com.gamecommunity.domain.team.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.gamecommunity.domain.team.dto.TeamRequestDto;
 import com.gamecommunity.domain.team.dto.TeamResponseDto;
 import com.gamecommunity.domain.team.entity.Team;
 import com.gamecommunity.domain.team.repository.TeamRepository;
-import com.gamecommunity.domain.team.service.TeamService;
 import com.gamecommunity.domain.teamuser.entity.TeamUser;
 import com.gamecommunity.domain.teamuser.repository.TeamUserRepository;
+import com.gamecommunity.domain.test.TeamTestHelper;
 import com.gamecommunity.domain.test.TeamUserTest;
-import com.gamecommunity.domain.test.UserTest;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.enums.game.name.GameName;
 import com.gamecommunity.global.exception.common.BusinessException;
@@ -31,6 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -64,53 +65,65 @@ class TeamServiceTest implements TeamUserTest {
   }
 
   @Test
-  @DisplayName("게임별 게시글 조회 - 성공")
-  void getTeamsByGameTestSuccess() {
+  public void testGetTeamsByGameName() {
 
-    // Given
-    Long teamId = TEST_TEAM_ID;
-    Team team1 = TEST_TEAM;
-    Team team2 = TEST_TEAM;
+    // given
+    int page = 0;
+    int size = 10;
+    String sortKey = "teamName";
+    boolean isAsc = true;
     GameName gameName = GameName.LEAGUE_OF_LEGEND;
-    List<Team> teamList = Arrays.asList(team1, team2);
 
-    given(teamRepository.findAllByGameName(gameName)).willReturn(teamList);
+    List<Team> fakeTeams = Arrays.asList(
+        TeamTestHelper.createFakeTeam(1L, 1L, "Team1", "Introduction1", gameName),
+        TeamTestHelper.createFakeTeam(2L, 2L, "Team2", "Introduction2", gameName),
+        TeamTestHelper.createFakeTeam(3L, 3L, "Team3", "Introduction3", gameName)
+    );
 
-    // When
-    List<TeamResponseDto> result = teamService.getTeamsByGameName(gameName);
+    when(teamRepository.findAllByGameName(eq(gameName), any())).thenReturn(
+        new PageImpl<>(fakeTeams));
 
-    // Then
-    assertNotNull(result);
-    assertFalse(result.isEmpty());
+    // when
+    Page<TeamResponseDto> result = teamService.getTeamsByGameName(page, size, sortKey, isAsc,
+        gameName);
 
-    TeamResponseDto firstTeamResponseDto = result.get(0);
-    assertEquals(team1.getTeamName(), firstTeamResponseDto.teamName());
-    assertEquals(team1.getTeamIntroduction(), firstTeamResponseDto.teamIntroduction());
+    // then
+    assertEquals(3, result.getTotalElements()); // 예상되는 총 팀 수 확인
+    verify(teamRepository, times(1)).findAllByGameName(eq(gameName), any());
   }
 
   @Test
-  @DisplayName("유저별 팀 조회 - 성공")
-  void getTeamsByUserTestSuccess() {
+  public void testGetTeamsByUser() {
 
-    // Given
-    User user = UserTest.TEST_USER;
-    TeamUser teamUser1 = TeamUserTest.TEST_TEAM_USER;
-    TeamUser teamUser2 = TeamUserTest.TEST_ANOTHER_TEAM_USER;
-    // 가상의 데이터 리스트 생성
-    List<TeamUser> teamUserList = Arrays.asList(teamUser1, teamUser2);
+    // given
+    int page = 0;
+    int size = 10;
+    String sortKey = "teamName";
+    boolean isAsc = true;
+    User user = TEST_USER;
 
-// Mock 객체의 findAllByGameName 메서드 호출에 대한 동작 설정
-    given(teamUserRepository.findAllByUserId(user.getId())).willReturn(teamUserList);
+    List<TeamUser> fakeTeamUsers = Arrays.asList(
+        TeamTestHelper.createFakeTeamUser(
+            TeamTestHelper.createFakeTeam(1L, 1L, "Team1", "Introduction1",
+                GameName.LEAGUE_OF_LEGEND), user),
+        TeamTestHelper.createFakeTeamUser(
+            TeamTestHelper.createFakeTeam(2L, 2L, "Team2", "Introduction2",
+                GameName.LEAGUE_OF_LEGEND), user),
+        TeamTestHelper.createFakeTeamUser(
+            TeamTestHelper.createFakeTeam(3L, 3L, "Team3", "Introduction3",
+                GameName.LEAGUE_OF_LEGEND), user)
+    );
+    when(teamUserRepository.findAllByUserId(eq(user.getId()), any())).thenReturn(
+        new PageImpl<>(fakeTeamUsers));
 
-    // When
-    List<TeamResponseDto> result = teamService.getTeamsByUser(user);
+    // when
+    Page<TeamResponseDto> result = teamService.getTeamsByUser(page, size, sortKey, isAsc, user);
 
-    // Then
-    assertNotNull(result);
-    assertFalse(result.isEmpty());
-
-    assertEquals(teamUser1.getTeam().getTeamName(), result.get(0).teamName());
+    // then
+    assertEquals(3, result.getTotalElements());
+    verify(teamUserRepository, times(1)).findAllByUserId(eq(user.getId()), any());
   }
+
 
   @Test
   @DisplayName("팀 정보 수정  - 성공")

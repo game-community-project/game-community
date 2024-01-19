@@ -6,9 +6,8 @@ import com.gamecommunity.domain.team.service.TeamService;
 import com.gamecommunity.global.enums.game.name.GameName;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
-import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,18 +35,28 @@ public class TeamController {
     return ResponseEntity.ok(ApiResponse.ok("팀 생성 성공", null));
   }
 
+
+
   @GetMapping
-  public ResponseEntity<ApiResponse<List<TeamResponseDto>>> getTeam(
+  public ResponseEntity<ApiResponse<Page<TeamResponseDto>>> getTeams(
+      @RequestParam("page") int page,
+      @RequestParam("size") int size,
+      @RequestParam("sortBy") String sortBy,
+      @RequestParam("isAsc") boolean isAsc,
       @RequestParam("gameName") GameName gameName
   ) {
-    List<TeamResponseDto> teamResponseDtos = teamService.getTeamsByGameName(gameName);
+    Page<TeamResponseDto> teamResponseDtos = teamService.getTeamsByGameName(page-1, size,sortBy,isAsc,gameName);
     return ResponseEntity.ok(ApiResponse.ok("게임 별로 속해 있는 팀 목록 조회 성공", teamResponseDtos));
   }
 
   @GetMapping("/users")
-  public ResponseEntity<ApiResponse<List<TeamResponseDto>>> getTeam(
+  public ResponseEntity<ApiResponse<Page<TeamResponseDto>>> getTeams(
+      @RequestParam("page") int page,
+      @RequestParam("size") int size,
+      @RequestParam("sortBy") String sortBy,
+      @RequestParam("isAsc") boolean isAsc,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    List<TeamResponseDto> teamResponseDtoList = teamService.getTeamsByUser(userDetails.getUser());
+    Page<TeamResponseDto> teamResponseDtoList = teamService.getTeamsByUser(page-1, size,sortBy,isAsc,userDetails.getUser());
     return ResponseEntity.ok(ApiResponse.ok("유저가 속한 팀 조회 성공", teamResponseDtoList));
   }
 

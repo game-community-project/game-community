@@ -1,5 +1,8 @@
 package com.gamecommunity.domain.team.service;
 
+import com.gamecommunity.domain.comment.dto.CommentResponseDto;
+import com.gamecommunity.domain.post.dto.PostResponseDto;
+import com.gamecommunity.domain.post.entity.Post;
 import com.gamecommunity.domain.team.dto.TeamRequestDto;
 import com.gamecommunity.domain.team.dto.TeamResponseDto;
 import com.gamecommunity.domain.team.entity.Team;
@@ -18,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,30 +40,38 @@ public class TeamService {
   private final TeamUserRepository teamUserRepository;
   private final UserRepository userRepository;
 
-
   public void createTeam(User user, TeamRequestDto teamRequestDto) {
     Team team = new Team(user.getId(), teamRequestDto);
     teamRepository.save(team);
     addAdminUserToTeam(user, team);
   }
 
-  public List<TeamResponseDto> getTeamsByGameName(GameName gameName) {
+  public Page<TeamResponseDto> getTeamsByGameName(
+      int page, int size, String sortKey, boolean isAsc, GameName gameName) {
+
+    Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+    Sort sort = Sort.by(direction, sortKey);
+    Pageable pageable = PageRequest.of(page, size, sort);
+
     for (GameName game : GameName.values()) {
       if (game.equals(gameName)) {
-        List<TeamResponseDto> teamResponseDtos = teamRepository.findAllByGameName(game).stream()
-            .map(TeamResponseDto::new).toList();
-        return teamResponseDtos;
+        Page<Team> teamList = teamRepository.findAllByGameName(game, pageable);
+        return teamList.map(TeamResponseDto::new);
       }
     }
+
     throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_GAME);
   }
 
-  public List<TeamResponseDto> getTeamsByUser(User user) {
-    List<TeamResponseDto> teamResponseDtos = teamUserRepository.findAllByUserId(user.getId())
-        .stream()
-        .map(Team -> new TeamResponseDto(Team.getTeam())).toList();
 
-    return teamResponseDtos;
+  public Page<TeamResponseDto> getTeamsByUser(int page, int size, String sortKey, boolean isAsc,
+      User user) {
+    Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+    Sort sort = Sort.by(direction, sortKey);
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    Page<TeamUser> teamListUser = teamUserRepository.findAllByUserId(user.getId(), pageable);
+    return teamListUser.map(TeamResponseDto::new);
   }
 
   public void deleteTeam(User user, Long teamId) {
