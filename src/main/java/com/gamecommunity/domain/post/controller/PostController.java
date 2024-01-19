@@ -86,8 +86,8 @@ public class PostController {
       @RequestPart(value = "file", required = false) MultipartFile file,
       @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 
-    postService.updatePost(postId, requestDto, file, userDetails);
-    return ResponseEntity.ok(ApiResponse.ok("게시글 수정 성공", null));
+    PostResponseDto responseDto = postService.updatePost(postId, requestDto, file, userDetails);
+    return ResponseEntity.ok(ApiResponse.ok("게시글 수정 성공", responseDto));
   }
 
   // 게시글 삭제

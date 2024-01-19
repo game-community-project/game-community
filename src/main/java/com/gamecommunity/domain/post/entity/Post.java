@@ -77,6 +77,9 @@ public class Post extends TimeStamped {
   private User user;
 
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+  private List<PostLike> postLikes;
+
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
   private List<Comment> comments;
 
   public Post(PostRequestDto requestDto, GameType gameType, GameName gameName,

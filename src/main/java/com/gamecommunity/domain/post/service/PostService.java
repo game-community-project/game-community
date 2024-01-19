@@ -87,7 +87,7 @@ public class PostService {
   }
 
   @Transactional
-  public void updatePost(
+  public PostResponseDto updatePost(
       Long postId, PostRequestDto requestDto, MultipartFile file, UserDetailsImpl userDetails)
       throws IOException {
 
@@ -101,6 +101,7 @@ public class PostService {
     }
 
     post.update(requestDto, imageUrl);
+    return PostResponseDto.fromEntity(post);
   }
 
   @Transactional
