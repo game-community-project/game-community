@@ -37,7 +37,7 @@ public class PostService {
 
 
   @Transactional
-  public void createPost(
+  public PostResponseDto createPost(
       PostRequestDto requestDto, GameType gameType, GameName gameName, BoardName boardName,
       MultipartFile file, UserDetailsImpl userDetails) throws IOException {
 
@@ -55,6 +55,7 @@ public class PostService {
         requestDto, gameType, gameName, boardName, imageUrl, loginUser);
 
     postRepository.save(post);
+    return PostResponseDto.fromEntity(post);
   }
 
   public PostResponseDto getPost(Long postId) {

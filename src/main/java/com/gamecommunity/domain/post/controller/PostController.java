@@ -45,8 +45,9 @@ public class PostController {
       @RequestParam BoardName boardName,
       @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 
-    postService.createPost(requestDto, gameType, gameName, boardName, file, userDetails);
-    return ResponseEntity.ok(ApiResponse.ok("게시글 작성 성공", null));
+    PostResponseDto responseDto = postService.createPost(
+        requestDto, gameType, gameName, boardName, file, userDetails);
+    return ResponseEntity.ok(ApiResponse.ok("게시글 작성 성공", responseDto));
   }
 
   // 게시글 단건 조회
