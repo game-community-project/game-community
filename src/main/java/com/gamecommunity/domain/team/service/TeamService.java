@@ -70,7 +70,7 @@ public class TeamService {
 
     Page<TeamUser> filteredPage = new PageImpl<>(filteredTeams, pageable,
         teamListUser.getTotalElements());
-    
+
     return filteredPage.map(TeamResponseDto::new);
 
   }
