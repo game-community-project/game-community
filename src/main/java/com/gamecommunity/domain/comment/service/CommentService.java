@@ -41,7 +41,7 @@ public class CommentService {
   public CommentResponseDto updateComment(User user, Long commentId,
       CommentRequestDto commentRequestDto) {
     Comment comment = commentRepository.findByCommentId(commentId).orElseThrow(() ->
-        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT));
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT_EXCEPTION));
     if (!user.getId().equals(comment.getUser().getId())) {
       throw new BusinessException(HttpStatus.BAD_REQUEST,
           ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
@@ -54,7 +54,7 @@ public class CommentService {
 
   public void deleteComment(User user, Long commentId) {
     Comment comment = commentRepository.findByCommentId(commentId).orElseThrow(() ->
-        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT));
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT_EXCEPTION));
 
     if (!user.getId().equals(comment.getUser().getId())) {
       throw new BusinessException(HttpStatus.BAD_REQUEST,
