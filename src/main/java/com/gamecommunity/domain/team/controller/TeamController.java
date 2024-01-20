@@ -44,9 +44,9 @@ public class TeamController {
       @RequestParam("isAsc") boolean isAsc,
       @RequestParam("gameName") GameName gameName
   ) {
-    Page<TeamResponseDto> teamResponseDtos = teamService.getTeamsByGameName(page - 1, size, sortBy,
+    Page<TeamResponseDto> teamResponseDtoList = teamService.getTeamsByGameName(page - 1, size, sortBy,
         isAsc, gameName);
-    return ResponseEntity.ok(ApiResponse.ok("게임 별로 속해 있는 팀 목록 조회 성공", teamResponseDtos));
+    return ResponseEntity.ok(ApiResponse.ok("게임 별로 속해 있는 팀 목록 조회 성공", teamResponseDtoList));
   }
 
   @GetMapping("/users")
