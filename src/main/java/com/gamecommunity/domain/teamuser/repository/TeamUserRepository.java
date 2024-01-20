@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
-  Page<TeamUser> findAllByUserId(Long userId, Pageable pageable);
+  Page<TeamUser> findAllByUser(User user, Pageable pageable);
 
   Optional<TeamUser> findByTeamAndUser(Team team, User deletedUser);
 }

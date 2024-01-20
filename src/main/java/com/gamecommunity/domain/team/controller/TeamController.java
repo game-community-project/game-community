@@ -55,9 +55,10 @@ public class TeamController {
       @RequestParam("size") int size,
       @RequestParam("sortBy") String sortBy,
       @RequestParam("isAsc") boolean isAsc,
+      @RequestParam("gameName") GameName gameName,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
     Page<TeamResponseDto> teamResponseDtoList = teamService.getTeamsByUser(page - 1, size, sortBy,
-        isAsc, userDetails.getUser());
+        isAsc,gameName, userDetails.getUser());
     return ResponseEntity.ok(ApiResponse.ok("유저가 속한 팀 조회 성공", teamResponseDtoList));
   }
 
