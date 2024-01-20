@@ -6,7 +6,11 @@ import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.util.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,13 +27,17 @@ public class OAuthController {
   private final JwtUtil jwtUtil;
 
   @GetMapping("/kakao/callback")
-  public ResponseEntity<ApiResponse> kakaoLogin(@RequestParam String code,
-      HttpServletResponse response) throws JsonProcessingException {
+  public ResponseEntity<?> kakaoCallback(@RequestParam String code,
+      HttpServletResponse response) throws JsonProcessingException, UnsupportedEncodingException {
 
     TokenDto tokenDto = oauthService.kakaoLogin(code);
     jwtUtil.setTokenResponse(tokenDto, response);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok("카카오 로그인 성공.",null));
-  }
+    String access = URLEncoder.encode(tokenDto.accessToken(), "utf-8").replaceAll("\\+", "%20");
+    String refresh = URLEncoder.encode(tokenDto.refreshToken(), "utf-8").replaceAll("\\+", "%20");
 
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(URI.create("http://localhost:3000/oauth?access="+access+"&refresh="+refresh+""));
+    return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+  }
 }

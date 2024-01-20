@@ -34,10 +34,10 @@ public class AdminController {
     return ResponseEntity.ok(ApiResponse.ok("유저 정보 목록 조회 성공", usersDto));
   }
 
-  @GetMapping("/users/{userId}")
+  @GetMapping("/users/{nickname}")
   public ResponseEntity<ApiResponse> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
-      @PathVariable long userId) {
-    var userDto = adminService.getUser(userDetails, userId);
+      @PathVariable String nickname) {
+    var userDto = adminService.getUser(userDetails, nickname);
     return ResponseEntity.ok(ApiResponse.ok("유저 정보 조회 성공", userDto));
   }
 
