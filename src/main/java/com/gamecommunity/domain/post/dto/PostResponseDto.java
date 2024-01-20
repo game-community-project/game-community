@@ -1,6 +1,7 @@
 package com.gamecommunity.domain.post.dto;
 
 import com.gamecommunity.domain.post.entity.Post;
+import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.enums.board.BoardName;
 import com.gamecommunity.global.enums.game.name.GameName;
 import com.gamecommunity.global.enums.game.type.GameType;
@@ -22,7 +23,9 @@ public record PostResponseDto(
     Integer postLike,
     Integer postUnlike,
     LocalDateTime createdAt,
-    LocalDateTime modifiedAt) {
+    LocalDateTime modifiedAt,
+    Long userId
+    ) {
 
   public static PostResponseDto fromEntity(Post post) {
     return new PostResponseDto(
@@ -38,7 +41,8 @@ public record PostResponseDto(
         post.getPostLike(),
         post.getPostUnlike(),
         post.getCreatedAt(),
-        post.getModifiedAt()
+        post.getModifiedAt(),
+        post.getUser().getId()
     );
   }
 }
