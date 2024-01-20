@@ -9,7 +9,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,23 +22,23 @@ public class TeamUserController {
 
   private final TeamUserService teamUserService;
 
-  @PostMapping("/teams/{teamId}/users/{userId}")
+  @PostMapping("/{teamId}/addUser")
   public ResponseEntity<ApiResponse<Void>> addUserToTeam(
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId,
-      @PathVariable Long userId) {
-    teamUserService.addUserToTeam(userDetails.getUser(), teamId, userId);
+      @RequestParam String nickname) {
+    teamUserService.addUserToTeam(userDetails.getUser(), teamId, nickname);
     return ResponseEntity.ok(ApiResponse.ok("팀에 유저 추가 성공", null));
   }
 
-  @DeleteMapping("/teams/{teamId}/users/{userId}")
+  @DeleteMapping("/{teamId}/deleteUser")
   public ResponseEntity<ApiResponse<Void>> deleteUserFromTeam(
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId,
-      @PathVariable Long userId) {
-    teamUserService.deleteUserFromTeam(userDetails.getUser(), teamId, userId);
+      @RequestBody String nickname) {
+    teamUserService.deleteUserFromTeam(userDetails.getUser(), teamId, nickname);
     return ResponseEntity.ok(ApiResponse.ok("팀에 유저 삭제 성공", null));
   }
 
-  @DeleteMapping("/api/teams/{teamId}/leave")
+  @DeleteMapping("/{teamId}/leave")
   public ResponseEntity<ApiResponse<Void>> leaveFromTeam(
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId){
 
