@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 public class CreateGuestbookDto {
 
   public record Request(
-          @NotBlank @Size(max = 50) String content
+          @Size(max = 50) String content
   ) {
 
     public Guestbook toEntity(String content, User toUser, User fromUser) {

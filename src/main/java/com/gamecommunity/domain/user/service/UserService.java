@@ -6,6 +6,8 @@ import com.gamecommunity.domain.user.dto.LoginRequestDto;
 import com.gamecommunity.domain.user.dto.PasswordChangeRequestDto;
 import com.gamecommunity.domain.user.dto.SignupRequestDto;
 import com.gamecommunity.domain.user.dto.TokenDto;
+import com.gamecommunity.domain.user.dto.UserDto;
+import com.gamecommunity.domain.user.dto.UserProfileDto;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.domain.user.entity.UserRoleEnum;
 import com.gamecommunity.domain.user.repository.UserRepository;
@@ -187,6 +189,13 @@ public class UserService {
     return tokenDto;
   }
 
+  @Transactional
+  public UserDto getUser(Long userId) {
+    User user = userRepository.findById(userId).orElseThrow(() ->
+            new BusinessException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+    return UserDto.from(user);
+  }
 
   public void idEmailUnique(String email) {
     if (userRepository.findByEmail(email).isPresent()) {
