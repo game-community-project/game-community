@@ -20,7 +20,7 @@ public class TeamUserService {
   private final TeamUserRepository teamUserRepository;
   private final UserRepository userRepository;
 
-  public void addUserToTeam(User user, Long teamId, Long invitedUserId) {
+  public void addUserToTeam(User user, Long teamId, String nickname) {
 
     Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
@@ -30,7 +30,7 @@ public class TeamUserService {
           ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
 
-    User invitedUser = userRepository.findById(invitedUserId).orElseThrow(() ->
+    User invitedUser = userRepository.findByNickname(nickname).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
     TeamUser teamUser = new TeamUser(team, invitedUser);
@@ -43,7 +43,7 @@ public class TeamUserService {
     teamUserRepository.save(teamUser);
   }
 
-  public void deleteUserFromTeam(User user, Long teamId, Long userId) {
+  public void deleteUserFromTeam(User user, Long teamId, String nickname) {
 
     Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
@@ -53,7 +53,7 @@ public class TeamUserService {
           ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
 
-    User deletedUser = userRepository.findById(userId).orElseThrow(() ->
+    User deletedUser = userRepository.findByNickname(nickname).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
     TeamUser teamUser = teamUserRepository.findByTeamAndUser(team, deletedUser).orElseThrow(() ->
@@ -65,7 +65,7 @@ public class TeamUserService {
   public void leaveFromTeam(User user, Long teamId) {
     Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
-    TeamUser teamUser = teamUserRepository.findByTeamAndUser(team,user).orElseThrow(()->
+    TeamUser teamUser = teamUserRepository.findByTeamAndUser(team, user).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_USER_EXCEPTION));
     teamUserRepository.delete(teamUser);
   }

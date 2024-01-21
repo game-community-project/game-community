@@ -1,5 +1,6 @@
 package com.gamecommunity.domain.team.service;
 
+import com.gamecommunity.domain.guestbook.dto.GuestbookDto;
 import com.gamecommunity.domain.team.dto.TeamRequestDto;
 import com.gamecommunity.domain.team.dto.TeamResponseDto;
 import com.gamecommunity.domain.team.entity.Team;
@@ -7,6 +8,7 @@ import com.gamecommunity.domain.team.repository.TeamRepository;
 import com.gamecommunity.domain.teamuser.entity.TeamUser;
 import com.gamecommunity.domain.teamuser.repository.TeamUserRepository;
 import com.gamecommunity.domain.teamuser.service.TeamUserService;
+import com.gamecommunity.domain.user.dto.UserProfileDto;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.domain.user.repository.UserRepository;
 import com.gamecommunity.global.enums.game.name.GameName;
@@ -32,10 +34,26 @@ public class TeamService {
   private final TeamUserRepository teamUserRepository;
   private final TeamUserService teamUserService;
 
-  public void createTeam(User user, TeamRequestDto teamRequestDto) {
+  public TeamResponseDto createTeam(User user, TeamRequestDto teamRequestDto) {
     Team team = new Team(user.getId(), teamRequestDto);
     teamRepository.save(team);
     teamUserService.addAdminUserToTeam(user, team);
+    return new TeamResponseDto(team);
+  }
+
+  public TeamResponseDto getTeam(Long teamId) {
+
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
+
+    return new TeamResponseDto(team);
+  }
+
+  public List<String> getUsersFromTeam(Long teamId) {
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
+    List<String> nicknameList = team.getTeamUsers().stream().map(h -> h.getUser().getNickname()).toList();
+    return nicknameList;
   }
 
   public Page<TeamResponseDto> getTeamsByGameName(
@@ -99,6 +117,13 @@ public class TeamService {
           ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
     team.update(teamRequestDto);
+  }
+
+  public Boolean isTeamAdmin(User user, Long teamId) {
+    Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_TEAM_EXCEPTION));
+
+    return team.getTeamAdminId().equals(user.getId());
   }
 }
 

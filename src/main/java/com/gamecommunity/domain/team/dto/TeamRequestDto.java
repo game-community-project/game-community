@@ -4,8 +4,8 @@ import com.gamecommunity.domain.team.entity.Team;
 import com.gamecommunity.global.enums.game.name.GameName;
 
 public record TeamRequestDto(
-    String name,
-    String introduction,
+    String teamName,
+    String teamIntroduction,
     GameName gameName
 ) {
 

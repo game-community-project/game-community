@@ -52,15 +52,15 @@ public class Team extends TimeStamped {
 
   public Team(Long adminId, TeamRequestDto teamRequestDto) {
     this.teamAdminId = adminId;
-    this.teamName = teamRequestDto.name();
-    this.teamIntroduction = teamRequestDto.introduction();
+    this.teamName = teamRequestDto.teamName();
+    this.teamIntroduction = teamRequestDto.teamIntroduction();
     this.gameName = teamRequestDto.gameName();
     this.teamUsers = new ArrayList<>();
   }
 
   public void update(TeamRequestDto teamRequestDto) {
-    this.teamName = teamRequestDto.name();
-    this.teamIntroduction = teamRequestDto.introduction();
+    this.teamName = teamRequestDto.teamName();
+    this.teamIntroduction = teamRequestDto.teamIntroduction();
     this.gameName = teamRequestDto.gameName();
   }
 }
