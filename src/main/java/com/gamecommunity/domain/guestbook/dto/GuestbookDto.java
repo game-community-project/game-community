@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record GuestbookDto(
-
+        Long id,
         String nickname,
         String content,
         LocalDateTime createdAt
@@ -14,7 +14,9 @@ public record GuestbookDto(
 ) {
 
   public GuestbookDto(Guestbook guestbook) {
-    this(guestbook.getFromUser().getNickname(),
+    this(
+            guestbook.getId(),
+            guestbook.getFromUser().getNickname(),
             guestbook.getContent(),
             guestbook.getCreatedAt());
   }
