@@ -33,7 +33,7 @@ public class TeamUserController {
   @DeleteMapping("/{teamId}/deleteUser")
   public ResponseEntity<ApiResponse<Void>> deleteUserFromTeam(
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId,
-      @RequestBody String nickname) {
+      @RequestParam String nickname) {
     teamUserService.deleteUserFromTeam(userDetails.getUser(), teamId, nickname);
     return ResponseEntity.ok(ApiResponse.ok("팀에 유저 삭제 성공", null));
   }
