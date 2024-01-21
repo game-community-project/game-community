@@ -73,8 +73,8 @@ public class CommentController {
       @RequestParam("sortBy") String sortBy,
       @RequestParam("isAsc") boolean isAsc,
       @PathVariable Long postId) {
-    Page<CommentResponseDto> commentResponseDtos = commentService.getComments(page-1, size,sortBy,isAsc,postId);
+    Page<CommentResponseDto> commentResponseDto = commentService.getComments(page-1, size,sortBy,isAsc,postId);
 
-    return ResponseEntity.ok(ApiResponse.ok("댓글 조회 성공", commentResponseDtos));
+    return ResponseEntity.ok(ApiResponse.ok("댓글 조회 성공", commentResponseDto));
   }
 }
