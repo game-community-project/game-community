@@ -37,13 +37,13 @@ public class AdminService {
     return userRepository.findAll().stream().map(AdminUserResponseDto::new).toList();
   }
 
-  public AdminUserResponseDto getUser(UserDetailsImpl userDetails, long userId) {
+  public AdminUserResponseDto getUser(UserDetailsImpl userDetails, String nickname) {
     if (userDetails.getUser().getRole() != UserRoleEnum.ADMIN) {
       throw new BusinessException(HttpStatus.BAD_REQUEST,
           ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
 
-    var user = userRepository.findById(userId).orElseThrow(
+    var user = userRepository.findByNickname(nickname).orElseThrow(
         () -> new BusinessException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND_USER_EXCEPTION)
     );
 

@@ -12,8 +12,11 @@ import com.gamecommunity.domain.user.repository.UserRepository;
 import com.gamecommunity.global.enums.game.name.GameName;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -54,13 +57,22 @@ public class TeamService {
 
 
   public Page<TeamResponseDto> getTeamsByUser(int page, int size, String sortKey, boolean isAsc,
-      User user) {
+     GameName gameName, User user) {
     Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
     Sort sort = Sort.by(direction, sortKey);
     Pageable pageable = PageRequest.of(page, size, sort);
 
-    Page<TeamUser> teamListUser = teamUserRepository.findAllByUserId(user.getId(), pageable);
-    return teamListUser.map(TeamResponseDto::new);
+    Page<TeamUser> teamListUser = teamUserRepository.findAllByUser(user, pageable);
+
+    List<TeamUser> filteredTeams = teamListUser.getContent().stream()
+        .filter(h -> h.getTeam().getGameName().equals(gameName))
+        .collect(Collectors.toList());
+
+    Page<TeamUser> filteredPage = new PageImpl<>(filteredTeams, pageable,
+        teamListUser.getTotalElements());
+
+    return filteredPage.map(TeamResponseDto::new);
+
   }
 
   public void deleteTeam(User user, Long teamId) {

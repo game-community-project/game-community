@@ -15,6 +15,7 @@ import com.gamecommunity.domain.team.entity.Team;
 import com.gamecommunity.domain.team.repository.TeamRepository;
 import com.gamecommunity.domain.teamuser.entity.TeamUser;
 import com.gamecommunity.domain.teamuser.repository.TeamUserRepository;
+import com.gamecommunity.domain.teamuser.service.TeamUserService;
 import com.gamecommunity.domain.test.TeamTestHelper;
 import com.gamecommunity.domain.test.TeamUserTest;
 import com.gamecommunity.domain.user.entity.User;
@@ -46,6 +47,8 @@ class TeamServiceTest implements TeamUserTest {
   private TeamRepository teamRepository;
   @Mock
   private TeamUserRepository teamUserRepository;
+  @Mock
+  private TeamUserService teamUserService;
 
 
   @Test
@@ -101,27 +104,28 @@ class TeamServiceTest implements TeamUserTest {
     String sortKey = "teamName";
     boolean isAsc = true;
     User user = TEST_USER;
+    GameName gameName = GameName.LEAGUE_OF_LEGEND;
 
     List<TeamUser> fakeTeamUsers = Arrays.asList(
         TeamTestHelper.createFakeTeamUser(
             TeamTestHelper.createFakeTeam(1L, 1L, "Team1", "Introduction1",
-                GameName.LEAGUE_OF_LEGEND), user),
+                gameName), user),
         TeamTestHelper.createFakeTeamUser(
             TeamTestHelper.createFakeTeam(2L, 2L, "Team2", "Introduction2",
-                GameName.LEAGUE_OF_LEGEND), user),
+                gameName), user),
         TeamTestHelper.createFakeTeamUser(
             TeamTestHelper.createFakeTeam(3L, 3L, "Team3", "Introduction3",
-                GameName.LEAGUE_OF_LEGEND), user)
+                gameName), user)
     );
-    when(teamUserRepository.findAllByUserId(eq(user.getId()), any())).thenReturn(
+    when(teamUserRepository.findAllByUser(eq(user), any())).thenReturn(
         new PageImpl<>(fakeTeamUsers));
 
     // when
-    Page<TeamResponseDto> result = teamService.getTeamsByUser(page, size, sortKey, isAsc, user);
+    Page<TeamResponseDto> result = teamService.getTeamsByUser(page, size, sortKey, isAsc, gameName,user);
 
     // then
     assertEquals(3, result.getTotalElements());
-    verify(teamUserRepository, times(1)).findAllByUserId(eq(user.getId()), any());
+    verify(teamUserRepository, times(1)).findAllByUser(eq(user), any());
   }
 
 
