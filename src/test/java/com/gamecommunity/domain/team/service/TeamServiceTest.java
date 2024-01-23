@@ -19,7 +19,6 @@ import com.gamecommunity.domain.teamuser.service.TeamUserService;
 import com.gamecommunity.domain.test.TeamTestHelper;
 import com.gamecommunity.domain.test.TeamUserTest;
 import com.gamecommunity.domain.user.entity.User;
-import com.gamecommunity.global.enums.game.name.GameName;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import java.util.Arrays;
@@ -67,33 +66,6 @@ class TeamServiceTest implements TeamUserTest {
     verify(teamRepository, times(1)).save(any(Team.class));
   }
 
-  @Test
-  public void testGetTeamsByGameName() {
-
-    // given
-    int page = 0;
-    int size = 10;
-    String sortKey = "teamName";
-    boolean isAsc = true;
-    GameName gameName = GameName.LEAGUE_OF_LEGEND;
-
-    List<Team> fakeTeams = Arrays.asList(
-        TeamTestHelper.createFakeTeam(1L, 1L, "Team1", "Introduction1", gameName),
-        TeamTestHelper.createFakeTeam(2L, 2L, "Team2", "Introduction2", gameName),
-        TeamTestHelper.createFakeTeam(3L, 3L, "Team3", "Introduction3", gameName)
-    );
-
-    when(teamRepository.findAllByGameName(eq(gameName), any())).thenReturn(
-        new PageImpl<>(fakeTeams));
-
-    // when
-    Page<TeamResponseDto> result = teamService.getTeamsByGameName(page, size, sortKey, isAsc,
-        gameName);
-
-    // then
-    assertEquals(3, result.getTotalElements()); // 예상되는 총 팀 수 확인
-    verify(teamRepository, times(1)).findAllByGameName(eq(gameName), any());
-  }
 
   @Test
   public void testGetTeamsByUser() {
@@ -104,24 +76,23 @@ class TeamServiceTest implements TeamUserTest {
     String sortKey = "teamName";
     boolean isAsc = true;
     User user = TEST_USER;
-    GameName gameName = GameName.LEAGUE_OF_LEGEND;
 
     List<TeamUser> fakeTeamUsers = Arrays.asList(
         TeamTestHelper.createFakeTeamUser(
-            TeamTestHelper.createFakeTeam(1L, 1L, "Team1", "Introduction1",
-                gameName), user),
+            TeamTestHelper.createFakeTeam(1L, 1L, "Team1", "Introduction1"
+            ), user),
         TeamTestHelper.createFakeTeamUser(
-            TeamTestHelper.createFakeTeam(2L, 2L, "Team2", "Introduction2",
-                gameName), user),
+            TeamTestHelper.createFakeTeam(2L, 2L, "Team2", "Introduction2"
+            ), user),
         TeamTestHelper.createFakeTeamUser(
-            TeamTestHelper.createFakeTeam(3L, 3L, "Team3", "Introduction3",
-                gameName), user)
+            TeamTestHelper.createFakeTeam(3L, 3L, "Team3", "Introduction3"
+            ), user)
     );
     when(teamUserRepository.findAllByUser(eq(user), any())).thenReturn(
         new PageImpl<>(fakeTeamUsers));
 
     // when
-    Page<TeamResponseDto> result = teamService.getTeamsByUser(page, size, sortKey, isAsc, gameName,user);
+    Page<TeamResponseDto> result = teamService.getTeamsByUser(page, size, sortKey, isAsc, user);
 
     // then
     assertEquals(3, result.getTotalElements());

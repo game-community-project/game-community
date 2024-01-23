@@ -2,9 +2,6 @@ package com.gamecommunity.domain.admin.service;
 
 import com.gamecommunity.domain.admin.dto.AdminUserResponseDto;
 import com.gamecommunity.domain.admin.dto.UserBlockRequestDto;
-import com.gamecommunity.global.enums.board.BoardName;
-import com.gamecommunity.global.enums.game.name.GameName;
-import com.gamecommunity.global.enums.game.type.GameType;
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.entity.Post;
@@ -107,16 +104,14 @@ public class AdminService {
   @Transactional
   public void writeNotice(
       UserDetailsImpl userDetails,
-      PostRequestDto requestDto,
-      GameType gameType,
-      GameName gameName
+      PostRequestDto requestDto
   ) {
     if (userDetails.getUser().getRole() != UserRoleEnum.ADMIN) {
       throw new BusinessException(HttpStatus.BAD_REQUEST,
           ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
 
-    Post post = new Post(requestDto, gameType, gameName, BoardName.NOTICE_BOARD, "",
+    Post post = new Post(requestDto, "",
         userDetails.getUser());
     postRepository.save(post);
   }

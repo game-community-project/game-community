@@ -2,8 +2,6 @@ package com.gamecommunity.domain.admin.controller;
 
 import com.gamecommunity.domain.admin.dto.UserBlockRequestDto;
 import com.gamecommunity.domain.admin.service.AdminService;
-import com.gamecommunity.global.enums.game.name.GameName;
-import com.gamecommunity.global.enums.game.type.GameType;
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -73,11 +70,9 @@ public class AdminController {
   @PostMapping("/notices")
   public ResponseEntity<ApiResponse> writeNotice(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
-      @RequestBody PostRequestDto requestDto,
-      @RequestParam(required = false) GameType gameType,
-      @RequestParam(required = false) GameName gameName
+      @RequestBody PostRequestDto requestDto
   ) {
-    adminService.writeNotice(userDetails, requestDto, gameType, gameName);
+    adminService.writeNotice(userDetails, requestDto);
     return ResponseEntity.ok(ApiResponse.ok("공지사항 작성 성공", null));
   }
 }
