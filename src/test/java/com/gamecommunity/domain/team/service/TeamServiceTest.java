@@ -56,7 +56,7 @@ class TeamServiceTest implements TeamUserTest {
 
     // given
     TeamRequestDto teamRequestDto = new TeamRequestDto(TEST_TEAM_NAME,
-        TEST_TEAM_INTRODUCTION, TEST_GAME_NAME);
+        TEST_TEAM_INTRODUCTION);
     User loginUser = TEST_USER;
 
     // when
@@ -106,7 +106,7 @@ class TeamServiceTest implements TeamUserTest {
 
     // given
     TeamRequestDto teamRequestDto = new TeamRequestDto(TEST_ANOTHER_TEAM_NAME,
-        TEST_ANOTHER_TEAM_INTRODUCTION, TEST_ANOTHER_GAME_NAME);
+        TEST_ANOTHER_TEAM_INTRODUCTION);
     Long teamId = TEST_TEAM_ID;
     User loginUser = TEST_USER;
     Team team = TEST_TEAM;
@@ -125,7 +125,7 @@ class TeamServiceTest implements TeamUserTest {
   void updateTeamTestFail() {
     // given
     TeamRequestDto teamRequestDto = new TeamRequestDto(TEST_ANOTHER_TEAM_NAME,
-        TEST_ANOTHER_TEAM_INTRODUCTION, TEST_ANOTHER_GAME_NAME);
+        TEST_ANOTHER_TEAM_INTRODUCTION);
     Long teamId = TEST_TEAM_ID;
     User loginUser = TEST_ANOTHER_USER;
     Team team = TEST_TEAM;
@@ -148,7 +148,7 @@ class TeamServiceTest implements TeamUserTest {
 
     // given
     TeamRequestDto teamRequestDto = new TeamRequestDto(TEST_ANOTHER_TEAM_NAME,
-        TEST_ANOTHER_TEAM_INTRODUCTION, TEST_ANOTHER_GAME_NAME);
+        TEST_ANOTHER_TEAM_INTRODUCTION);
     Long teamId = TEST_TEAM_ID;
     User loginUser = TEST_USER;
     Team team = TEST_TEAM;
