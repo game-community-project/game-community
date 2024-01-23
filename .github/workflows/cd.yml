@@ -1,10 +1,9 @@
 name: GameCommunity Deploy
 
 on:
-  workflow_run:
-    workflows: ["GameCommunity"]
-    types:
-      - completed
+  pull_request:
+    branches: [ "main" ]
+    types: [closed]
 
 jobs:
   deploy:
