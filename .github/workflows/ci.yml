@@ -1,8 +1,6 @@
 name: GameCommunity
 
 on:
-  push:
-    branches: [ "dev" ]
   pull_request:
     branches: [ "dev" ]
     types: [closed]
@@ -58,13 +56,10 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_TAG }}
 
-  deploy:
-    needs: build-docker-image
-    name: Deploy
-    runs-on: [ self-hosted, label-development ]
-    steps:
-      - name: Docker-compose run
+      - name: Check Test Coverage
         run: |
-          docker compose down
-          docker compose pull
-          docker compose up -d
+          COVERAGE=$(./gradlew jacocoTestReport --console=plain | grep "Overall coverage rate" | awk '{print $4}' | sed 's/%//')
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Error: Test coverage is less than 80%"
+            exit 1
+          fi
