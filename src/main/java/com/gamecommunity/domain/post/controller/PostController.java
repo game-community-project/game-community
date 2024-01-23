@@ -3,11 +3,7 @@ package com.gamecommunity.domain.post.controller;
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.service.PostService;
-import com.gamecommunity.global.aop.PostTimer;
 import com.gamecommunity.global.aop.Timer;
-import com.gamecommunity.global.enums.board.BoardName;
-import com.gamecommunity.global.enums.game.name.GameName;
-import com.gamecommunity.global.enums.game.type.GameType;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.io.IOException;
@@ -35,18 +31,14 @@ public class PostController {
 
   // 게시글 작성
   @Timer
-  @PostTimer
   @PostMapping
   public ResponseEntity<?> createPost(
       @RequestPart(value = "requestDto") PostRequestDto requestDto,
       @RequestPart(value = "file", required = false) MultipartFile file,
-      @RequestParam(required = false) GameType gameType,
-      @RequestParam(required = false) GameName gameName,
-      @RequestParam BoardName boardName,
       @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 
     PostResponseDto responseDto = postService.createPost(
-        requestDto, gameType, gameName, boardName, file, userDetails);
+        requestDto, file, userDetails);
     return ResponseEntity.ok(ApiResponse.ok("게시글 작성 성공", responseDto));
   }
 
@@ -66,13 +58,11 @@ public class PostController {
       @RequestParam("page") int page,
       @RequestParam("size") int size,
       @RequestParam("sortKey") String sortKey,
-      @RequestParam("isAsc") boolean isAsc,
-      @RequestParam(name = "type", required = false) GameType type,
-      @RequestParam(name = "game", required = false) GameName game,
-      @RequestParam(name = "board") BoardName board) {
+      @RequestParam("isAsc") boolean isAsc
+  ) {
 
     Page<PostResponseDto> responseDtoPage = postService.getPosts(
-        page - 1, size, sortKey, isAsc, type, game, board);
+        page - 1, size, sortKey, isAsc);
 
     return ResponseEntity.ok(ApiResponse.ok("게시글 페이징 조회 성공", responseDtoPage));
   }
