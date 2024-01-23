@@ -3,14 +3,11 @@ package com.gamecommunity.domain.team.controller;
 import com.gamecommunity.domain.team.dto.TeamRequestDto;
 import com.gamecommunity.domain.team.dto.TeamResponseDto;
 import com.gamecommunity.domain.team.service.TeamService;
-import com.gamecommunity.domain.user.dto.UserProfileDto;
-import com.gamecommunity.global.enums.game.name.GameName;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.util.List;
-import javax.print.DocFlavor.STRING;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -34,7 +31,7 @@ public class TeamController {
   private final TeamService teamService;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<TeamResponseDto>>createTeam(
+  public ResponseEntity<ApiResponse<TeamResponseDto>> createTeam(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody TeamRequestDto teamRequestDto) {
     TeamResponseDto teamResponseDto = teamService.createTeam(userDetails.getUser(), teamRequestDto);
@@ -43,29 +40,15 @@ public class TeamController {
 
 
   @GetMapping("/{teamId}")
-  public ResponseEntity<ApiResponse<TeamResponseDto>> getTeam(@PathVariable Long teamId){
+  public ResponseEntity<ApiResponse<TeamResponseDto>> getTeam(@PathVariable Long teamId) {
     TeamResponseDto teamResponseDto = teamService.getTeam(teamId);
-    return ResponseEntity.ok(ApiResponse.ok("팀 정보 조회 성공",teamResponseDto));
+    return ResponseEntity.ok(ApiResponse.ok("팀 정보 조회 성공", teamResponseDto));
   }
 
   @GetMapping("/{teamId}/users")
-  public ResponseEntity<ApiResponse<List<String>>> getUsersFromTeam(@PathVariable Long teamId){
+  public ResponseEntity<ApiResponse<List<String>>> getUsersFromTeam(@PathVariable Long teamId) {
     List<String> nicknameList = teamService.getUsersFromTeam(teamId);
-    return ResponseEntity.ok(ApiResponse.ok("팀에 속해 있는 유저 이름 리스트 조회 성공",nicknameList));
-  }
-
-
-  @GetMapping
-  public ResponseEntity<ApiResponse<Page<TeamResponseDto>>> getTeamsByGameName(
-      @RequestParam("page") int page,
-      @RequestParam("size") int size,
-      @RequestParam("sortBy") String sortBy,
-      @RequestParam("isAsc") boolean isAsc,
-      @RequestParam("gameName") GameName gameName
-  ) {
-    Page<TeamResponseDto> teamResponseDtoList = teamService.getTeamsByGameName(page - 1, size, sortBy,
-        isAsc, gameName);
-    return ResponseEntity.ok(ApiResponse.ok("게임 별로 속해 있는 팀 목록 조회 성공", teamResponseDtoList));
+    return ResponseEntity.ok(ApiResponse.ok("팀에 속해 있는 유저 이름 리스트 조회 성공", nicknameList));
   }
 
   @GetMapping("/users")
@@ -74,10 +57,9 @@ public class TeamController {
       @RequestParam("size") int size,
       @RequestParam("sortBy") String sortBy,
       @RequestParam("isAsc") boolean isAsc,
-      @RequestParam("gameName") GameName gameName,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
     Page<TeamResponseDto> teamResponseDtoList = teamService.getTeamsByUser(page - 1, size, sortBy,
-        isAsc,gameName, userDetails.getUser());
+        isAsc, userDetails.getUser());
     return ResponseEntity.ok(ApiResponse.ok("유저가 속한 팀 조회 성공", teamResponseDtoList));
   }
 
@@ -97,13 +79,14 @@ public class TeamController {
   }
 
   @GetMapping("/{teamId}/admin")
-  public ResponseEntity<ApiResponse<Boolean>> isTeamAdmin(@AuthenticationPrincipal UserDetailsImpl userDetails,
-      @PathVariable Long teamId){
+  public ResponseEntity<ApiResponse<Boolean>> isTeamAdmin(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @PathVariable Long teamId) {
     if (userDetails == null) {
       throw new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.AUTHENTICATION_EXCEPTION);
     }
     Boolean isTeamAdmin = teamService.isTeamAdmin(userDetails.getUser(), teamId);
-    return ResponseEntity.ok(ApiResponse.ok("팀의 관리자 여부 확인 성공",isTeamAdmin));
+    return ResponseEntity.ok(ApiResponse.ok("팀의 관리자 여부 확인 성공", isTeamAdmin));
   }
 }
 

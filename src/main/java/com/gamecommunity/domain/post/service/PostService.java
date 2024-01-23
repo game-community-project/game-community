@@ -8,9 +8,6 @@ import com.gamecommunity.domain.post.entity.Post;
 import com.gamecommunity.domain.post.repository.PostRepository;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.config.SecurityConfig.AuthenticationHelper;
-import com.gamecommunity.global.enums.board.BoardName;
-import com.gamecommunity.global.enums.game.name.GameName;
-import com.gamecommunity.global.enums.game.type.GameType;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
@@ -38,8 +35,7 @@ public class PostService {
 
   @Transactional
   public PostResponseDto createPost(
-      PostRequestDto requestDto, GameType gameType, GameName gameName, BoardName boardName,
-      MultipartFile file, UserDetailsImpl userDetails) throws IOException {
+      PostRequestDto requestDto, MultipartFile file, UserDetailsImpl userDetails) throws IOException {
 
     User loginUser = authenticationHelper.checkAuthentication(userDetails);
 
@@ -52,7 +48,7 @@ public class PostService {
 
     // 게시글 생성
     Post post = new Post(
-        requestDto, gameType, gameName, boardName, imageUrl, loginUser);
+        requestDto, imageUrl, loginUser);
 
     postRepository.save(post);
     return PostResponseDto.fromEntity(post);
@@ -73,15 +69,13 @@ public class PostService {
   }
 
   public Page<PostResponseDto> getPosts(
-      int page, int size, String sortKey, boolean isAsc,
-      GameType type, GameName game, BoardName board) {
+      int page, int size, String sortKey, boolean isAsc) {
     // 페이징 및 정렬처리
     Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
     Sort sort = Sort.by(direction, sortKey);
     Pageable pageable = PageRequest.of(page, size, sort);
 
-    Page<Post> postList = postRepository
-        .findByGameTypeAndGameNameAndBoardName(type, game, board, pageable);
+    Page<Post> postList = postRepository.findAll(pageable);
 
     return postList.map(PostResponseDto::fromEntity);
   }

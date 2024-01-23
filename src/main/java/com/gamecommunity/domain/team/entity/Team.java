@@ -3,12 +3,9 @@ package com.gamecommunity.domain.team.entity;
 import com.gamecommunity.domain.team.dto.TeamRequestDto;
 import com.gamecommunity.domain.teamuser.entity.TeamUser;
 import com.gamecommunity.global.auditing.TimeStamped;
-import com.gamecommunity.global.enums.game.name.GameName;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,10 +40,6 @@ public class Team extends TimeStamped {
   @Column(nullable = false)
   private String teamIntroduction;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private GameName gameName;
-
   @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<TeamUser> teamUsers = new ArrayList<>();
 
@@ -54,13 +47,11 @@ public class Team extends TimeStamped {
     this.teamAdminId = adminId;
     this.teamName = teamRequestDto.teamName();
     this.teamIntroduction = teamRequestDto.teamIntroduction();
-    this.gameName = teamRequestDto.gameName();
     this.teamUsers = new ArrayList<>();
   }
 
   public void update(TeamRequestDto teamRequestDto) {
     this.teamName = teamRequestDto.teamName();
     this.teamIntroduction = teamRequestDto.teamIntroduction();
-    this.gameName = teamRequestDto.gameName();
   }
 }

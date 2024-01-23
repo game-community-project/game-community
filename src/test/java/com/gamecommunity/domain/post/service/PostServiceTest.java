@@ -15,9 +15,6 @@ import com.gamecommunity.domain.post.repository.PostRepository;
 import com.gamecommunity.domain.test.PostTest;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.config.SecurityConfig.AuthenticationHelper;
-import com.gamecommunity.global.enums.board.BoardName;
-import com.gamecommunity.global.enums.game.name.GameName;
-import com.gamecommunity.global.enums.game.type.GameType;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
@@ -69,8 +66,7 @@ class PostServiceTest implements PostTest {
     given(postImageUploadService.uploadFile(file)).willReturn(TEST_POST_IMAGE_URL);
 
     // when
-    postService.createPost(requestDto, TEST_GAME_TYPE, TEST_GAME_NAME, TEST_BOARD_NAME,
-        file, TEST_USER_DETAILS);
+    postService.createPost(requestDto, file, TEST_USER_DETAILS);
 
     // Then
     verify(postImageUploadService, times(1)).uploadFile(file);
@@ -123,9 +119,6 @@ class PostServiceTest implements PostTest {
     int size = 10;
     String sortKey = "createdAt";
     boolean isAsc = true;
-    GameType type = GameType.PC_GAME;
-    GameName game = GameName.LEAGUE_OF_LEGEND;
-    BoardName board = BoardName.FREE_BOARD;
 
     Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortKey));
 
@@ -133,12 +126,12 @@ class PostServiceTest implements PostTest {
 
     Page<Post> postPage = new PageImpl<>(posts, pageable, posts.size());
 
-    given(postRepository.findByGameTypeAndGameNameAndBoardName(type, game, board, pageable))
+    given(postRepository.findAll(pageable))
         .willReturn(postPage);
 
     // when
     Page<PostResponseDto> result = postService.getPosts(
-        page, size, sortKey, isAsc, type, game, board);
+        page, size, sortKey, isAsc);
 
     // then
     assertEquals(postPage.getTotalElements(), result.getTotalElements());
