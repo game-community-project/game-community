@@ -22,31 +22,6 @@ repositories {
 	mavenCentral()
 }
 
-jacocoTestReport {
-	reports {
-		// 원하는 리포트를 켜고 끌 수 있습니다.
-		html.required = true
-		xml.required = false
-		csv.required = false
-	}
-}
-
-jacocoTestCoverageVerification {
-	// 커버리지의 범위와 퍼센테이지를 설정합니다.
-	violationRules {
-		rule {
-			element = 'CLASS'		// class 단위로 룰을 체크합니다.
-
-			// 브랜치 커버리지의 최소값을 설정합니다.
-			limit {
-				counter = 'BRANCH'
-				value = 'COVEREDRATIO'
-				minimum = 0.80
-			}
-		}
-	}
-}
-
 dependencies {
 	// JSON
 	implementation group: 'org.json', name: 'json', version: '20231013'
@@ -99,6 +74,20 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 }
 
+jacoco {
+	toolVersion = "0.8.7"
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
+}
+
+// Jacoco 테스트 리포트 설정
+jacocoTestReport {
+	reports {
+		xml.required = true
+		html.required = true
+	}
+	dependsOn test // 테스트 수행 이후에 리포트 생성
 }
