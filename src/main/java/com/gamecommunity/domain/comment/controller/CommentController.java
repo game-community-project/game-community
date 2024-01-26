@@ -4,6 +4,7 @@ package com.gamecommunity.domain.comment.controller;
 import com.gamecommunity.domain.comment.dto.CommentRequestDto;
 import com.gamecommunity.domain.comment.dto.CommentResponseDto;
 import com.gamecommunity.domain.comment.service.CommentService;
+import com.gamecommunity.domain.post.service.PostService;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class CommentController {
 
   private final CommentService commentService;
+
+  private final PostService postService;
 
   @PostMapping
   public ResponseEntity<ApiResponse<CommentResponseDto>> createComment(
@@ -77,4 +80,16 @@ public class CommentController {
 
     return ResponseEntity.ok(ApiResponse.ok("댓글 조회 성공", commentResponseDto));
   }
+
+  // 댓글 채택 API
+  @PutMapping("/{commentId}/accept")
+  public ResponseEntity<?> acceptComment(
+      @PathVariable Long postId,
+      @PathVariable Long commentId,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    postService.acceptComment(postId, commentId, userDetails);
+    return ResponseEntity.ok(ApiResponse.ok("댓글 채택 성공", null));
+  }
+
 }
