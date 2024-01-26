@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -89,6 +90,17 @@ public class PostController {
 
     postService.deletePost(postId, userDetails);
     return ResponseEntity.ok(ApiResponse.ok("게시글 삭제 성공", null));
+  }
+
+  // 게시글 마감
+  @Timer
+  @PutMapping("/{postId}/close")
+  public ResponseEntity<?> closePost(
+      @PathVariable Long postId,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+    postService.closePost(postId, userDetails);
+    return ResponseEntity.ok(ApiResponse.ok("게시글 마감 성공", null));
   }
 
 }

@@ -55,6 +55,9 @@ public class Post extends TimeStamped {
   @Column(nullable = false)
   private Integer postUnlike;
 
+  @Column(nullable = false)
+  private Boolean close;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
@@ -74,6 +77,7 @@ public class Post extends TimeStamped {
     this.report = 0;
     this.postLike = 0;
     this.postUnlike = 0;
+    this.close = false;
     this.user = loginUser;
   }
 
@@ -89,6 +93,10 @@ public class Post extends TimeStamped {
 
   public void setPostUnlike(int postUnlike) {
     this.postUnlike = postUnlike;
+  }
+
+  public void setClose(boolean close) {
+    this.close = close;
   }
 
 }

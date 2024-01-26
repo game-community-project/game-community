@@ -106,6 +106,14 @@ public class PostService {
     postRepository.delete(post);
   }
 
+  @Transactional
+  public void closePost(Long postId, UserDetailsImpl userDetails) {
+    Post post = getAuthenticationPost(postId, userDetails);
+
+    post.setClose(true);
+    postRepository.save(post);
+  }
+
   // 인증된 게시글 가져오는 메서드
   private Post getAuthenticationPost(Long postId, UserDetailsImpl userDetails) {
     User loginUser = authenticationHelper.checkAuthentication(userDetails);
@@ -121,5 +129,6 @@ public class PostService {
     }
     return post;
   }
+
 
 }
