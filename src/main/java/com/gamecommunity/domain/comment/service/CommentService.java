@@ -12,6 +12,9 @@ import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,15 +30,98 @@ public class CommentService {
 
   private final CommentRepository commentRepository;
   private final PostRepository postRepository;
-  private final PostService postService;
 
-  public CommentResponseDto createComment(User user, Long postId,
+  @Transactional
+  public void createComment(User user, Long postId,
       CommentRequestDto commentRequestDto) {
     Post post = postRepository.findByPostId(postId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_POST_EXCEPTION));
-    Comment comment = new Comment(user, post, commentRequestDto);
-    commentRepository.save(comment);
-    return new CommentResponseDto(comment);
+    List<Comment> comments = commentRepository.findAllByPost(post);
+    System.out.println("comments = " + comments);
+    Long commentRef = null;
+    if (!comments.isEmpty()) {
+      commentRef = Collections.max(comments, Comparator.comparing(Comment::getRef)).getRef();
+    } else {
+      commentRef = 0l;
+    }
+
+    Long parentId = commentRequestDto.parentId();
+    System.out.println("parentId = " + parentId);
+    String content = commentRequestDto.content();
+    if (parentId == 0) {
+      // 최상위 댓글
+      Comment comment = Comment.builder()
+          .ref(commentRef + 1l)
+          .level(0l)
+          .refOrder(0l)
+          .childCount(0l)
+          .parentId(0l)
+          .content(content)
+          .user(user)
+          .post(post)
+          .build();
+      commentRepository.save(comment);
+    } else {
+      //대댓글 저장
+      // 부모 댓글 데이터
+      Comment parentComment = commentRepository.findById(parentId).orElseThrow(() ->
+          new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT_EXCEPTION));
+
+      Long refOrderResult = refOrderAndUpdate(parentComment);
+
+      Comment comment = Comment.builder()
+          .ref(parentComment.getRef())
+          .level(parentComment.getLevel() + 1l)
+          .refOrder(refOrderResult)
+          .childCount(0l)
+          .parentId(parentId)
+          .content(content)
+          .user(user)
+          .post(post)
+          .build();
+
+      //부모 댓글의 자식컬럼수 + 1 업데이트
+      commentRepository.updateChildCount(parentComment.getCommentId(),
+          parentComment.getChildCount()+1);
+
+      commentRepository.save(comment);
+    }
+  }
+
+
+  private Long refOrderAndUpdate(Comment comment) {
+
+    Long saveLevel = comment.getLevel() + 1l;
+    Long refOrder = comment.getRefOrder();
+    Long childCount = comment.getChildCount();
+    Long ref = comment.getRef();
+
+    //부모 댓글그룹의 자식수
+    Long childCountSum = commentRepository.findBySumChildCount(ref);
+    //SELECT SUM(childCount) FROM BOARD_COMMENTS WHERE ref = ?1
+    //부모 댓글그룹의 최댓값 level
+    Long maxLevel = commentRepository.findByNvlMaxLevel(ref);
+    //SELECT MAX(level) FROM BOARD_COMMENTS WHERE ref = ?1
+
+    //저장할 대댓글 level과 그룹내의최댓값 level의 조건 비교
+        /*
+        level + 1 < 그룹리스트에서 max level값  ChildCount sum + 1 * NO UPDATE
+        level + 1 = 그룹리스트에서 max level값  refOrder + ChileCount + 1 * UPDATE
+        level + 1 > 그룹리스트에서 max level값  refOrder + 1 * UPDATE
+        */
+    if (saveLevel < maxLevel) {
+      return childCountSum + 1l;
+    } else if (saveLevel.equals(maxLevel)) {
+      commentRepository.updateRefOrderPlus(ref, refOrder + childCount);
+      //UPDATE comment SET refOrder = refOrder + 1 WHERE ref = ?1 AND refOrder > ?2
+      return refOrder + childCount + 1l;
+    } else if (saveLevel > maxLevel) {
+      commentRepository.updateRefOrderPlus(ref, refOrder);
+      //UPDATE comment SET refOrder = refOrder + 1 WHERE ref = ?1 AND refOrder > ?2
+      return refOrder + 1l;
+    }
+
+    return null;
   }
 
   @Transactional

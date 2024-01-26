@@ -39,7 +39,7 @@ public class CommentController {
       @RequestBody CommentRequestDto commentRequestDto
   ) {
     User user = userDetails.getUser();
-    CommentResponseDto commentResponseDto = commentService.createComment(user, postId,
+    commentService.createComment(user, postId,
         commentRequestDto);
     return ResponseEntity.ok(ApiResponse.ok("댓글 생성 성공", null));
   }

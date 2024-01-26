@@ -31,6 +31,21 @@ public class Comment extends TimeStamped {
   private Long commentId;
 
   @Column(nullable = false)
+  private Long ref;
+
+  @Column(nullable = false)
+  private Long level;
+
+  @Column(nullable = false)
+  private Long refOrder;
+
+  @Column(nullable = false)
+  private Long childCount;
+
+  @Column(nullable = false)
+  private Long parentId;
+
+  @Column(nullable = false)
   private String content;
 
   @Column(nullable = false)
@@ -44,7 +59,13 @@ public class Comment extends TimeStamped {
   @JoinColumn(name = "post_id", nullable = false)
   private Post post;
 
-  public Comment(User user, Post post, CommentRequestDto requestDto) {
+  public Comment(Long ref, Long level, Long refOrder, Long childCount, Long parentId, User user,
+      Post post, CommentRequestDto requestDto) {
+    this.ref = ref;
+    this.level =level;
+    this.refOrder = refOrder;
+    this.childCount = childCount;
+    this.parentId = parentId;
     this.user = user;
     this.post = post;
     this.content = requestDto.content();
