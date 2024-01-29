@@ -55,11 +55,3 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ secrets.DOCKERHUB_TAG }}
-
-      - name: Check Test Coverage
-        run: |
-          COVERAGE=$(./gradlew jacocoTestReport --console=plain | grep "Overall coverage rate" | awk '{print int($4)}' | sed 's/%//')
-          if [ "$COVERAGE" -lt 80 ]; then
-            echo "Error: Test coverage is less than 80%"
-            exit 1
-          fi

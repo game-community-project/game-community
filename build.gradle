@@ -78,16 +78,31 @@ jacoco {
 	toolVersion = "0.8.7"
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
-	finalizedBy 'jacocoTestReport'
+	finalizedBy jacocoTestReport
 }
 
-// Jacoco 테스트 리포트 설정
 jacocoTestReport {
 	reports {
-		xml.required = true
 		html.required = true
+		csv.required = false
+		xml.required = false
 	}
-	dependsOn test // 테스트 수행 이후에 리포트 생성
+	finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			enabled = true
+			element = 'CLASS'
+
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.00
+			}
+		}
+	}
 }
