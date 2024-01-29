@@ -8,10 +8,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.gamecommunity.domain.comment.entity.Comment;
+import com.gamecommunity.domain.comment.repository.CommentRepository;
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.entity.Post;
 import com.gamecommunity.domain.post.repository.PostRepository;
+import com.gamecommunity.domain.test.CommentTest;
 import com.gamecommunity.domain.test.PostTest;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.config.SecurityConfig.AuthenticationHelper;
@@ -40,7 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 @DisplayName("게시글 서비스 테스트")
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-class PostServiceTest implements PostTest {
+class PostServiceTest implements CommentTest {
 
   @InjectMocks
   private PostService postService;
@@ -50,6 +53,8 @@ class PostServiceTest implements PostTest {
   private PostImageUploadService postImageUploadService;
   @Mock
   private AuthenticationHelper authenticationHelper;
+  @Mock
+  private CommentRepository commentRepository;
 
   @Test
   @DisplayName("게시글 작성 - 성공")
@@ -234,6 +239,56 @@ class PostServiceTest implements PostTest {
 
     assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
     assertEquals(ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION.getMessage(), ex.getMessage());
+  }
+
+  @Test
+  @DisplayName("게시글 마감 - 성공")
+  void closePostSuccess() {
+
+    // given
+    Long postId = TEST_POST_ID;
+    Post post = TEST_POST;
+    UserDetailsImpl userDetails = TEST_USER_DETAILS;
+    User loginUser = userDetails.getUser();
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
+
+    given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+    // when
+    postService.closePost(postId, userDetails);
+
+    // then
+    verify(postRepository, times(1)).save(post);
+    assertEquals(true, post.getClose());
+  }
+
+  @Test
+  @DisplayName("댓글채택 - 성공")
+  void acceptCommentSuccess() {
+
+    // given
+    Long postId = TEST_POST_ID;
+    Post post = TEST_POST;
+    UserDetailsImpl userDetails = TEST_USER_DETAILS;
+    User loginUser = userDetails.getUser();
+    Long commentId = TEST_COMMENT_ID;
+    Comment comment = TEST_COMMENT;
+
+    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
+
+    given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+    given(commentRepository.findByCommentId(commentId)).willReturn(Optional.of(comment));
+
+    // when
+    postService.acceptComment(postId, commentId, userDetails);
+
+    // then
+    verify(commentRepository, times(1)).save(comment);
+    assertEquals(true, comment.getAccept());
+    assertEquals(true, post.getClose());
+
   }
 
 }

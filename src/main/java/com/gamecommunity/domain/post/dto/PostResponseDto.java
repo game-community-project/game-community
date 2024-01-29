@@ -15,6 +15,7 @@ public record PostResponseDto(
     Integer report,
     Integer postLike,
     Integer postUnlike,
+    Boolean close,
     LocalDateTime createdAt,
     LocalDateTime modifiedAt,
     Long userId
@@ -30,6 +31,7 @@ public record PostResponseDto(
         post.getReport(),
         post.getPostLike(),
         post.getPostUnlike(),
+        post.getClose(),
         post.getCreatedAt(),
         post.getModifiedAt(),
         post.getUser().getId()
