@@ -28,6 +28,7 @@ public interface PostTest extends UserTest {
       .report(TEST_REPORT)
       .postLike(TEST_POST_LIKE)
       .postUnlike(TEST_POST_Unlike)
+      .close(false)
       .user(TEST_USER)
       .build();
 
@@ -40,6 +41,7 @@ public interface PostTest extends UserTest {
       .report(TEST_REPORT)
       .postLike(TEST_POST_LIKE)
       .postUnlike(TEST_POST_Unlike)
+      .close(false)
       .user(TEST_ANOTHER_USER)
       .build();
 
@@ -57,6 +59,7 @@ public interface PostTest extends UserTest {
       .report(TEST_REPORT)
       .postLike(TEST_POST_LIKE)
       .postUnlike(TEST_POST_Unlike)
+      .close(false)
       .build();
 
   PostLike TEST_POSTLIKE = PostLike.builder()

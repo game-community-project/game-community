@@ -36,7 +36,6 @@ public class PostService {
 
   private final CommentRepository commentRepository;
 
-
   @Transactional
   public PostResponseDto createPost(
       PostRequestDto requestDto, MultipartFile file, UserDetailsImpl userDetails) throws IOException {
@@ -63,13 +62,6 @@ public class PostService {
     Post post = getFindPost(postId);
 
     return PostResponseDto.fromEntity(post);
-  }
-
-  // 게시글 가져오는 메서드
-  public Post getFindPost(Long postId) {
-    return postRepository.findById(postId)
-        .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
-            ErrorCode.NOT_FOUND_POST_EXCEPTION));
   }
 
   public Page<PostResponseDto> getPosts(
@@ -128,6 +120,13 @@ public class PostService {
     comment.setAccepted(true);
     commentRepository.save(comment);
     closePost(comment.getPost().getPostId(), userDetails);
+  }
+
+  // 게시글 가져오는 메서드
+  public Post getFindPost(Long postId) {
+    return postRepository.findById(postId)
+        .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
+            ErrorCode.NOT_FOUND_POST_EXCEPTION));
   }
 
   // 인증된 게시글 가져오는 메서드
