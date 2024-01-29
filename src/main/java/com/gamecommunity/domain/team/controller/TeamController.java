@@ -63,6 +63,17 @@ public class TeamController {
     return ResponseEntity.ok(ApiResponse.ok("유저가 속한 팀 조회 성공", teamResponseDtoList));
   }
 
+  @GetMapping
+  public ResponseEntity<ApiResponse<Page<TeamResponseDto>>> getTeams(
+      @RequestParam("page") int page,
+      @RequestParam("size") int size,
+      @RequestParam("sortBy") String sortBy,
+      @RequestParam("isAsc") boolean isAsc) {
+    Page<TeamResponseDto> teamResponseDtoList = teamService.getTeams(page - 1, size, sortBy,
+        isAsc);
+    return ResponseEntity.ok(ApiResponse.ok("팀 목록 조회 성공", teamResponseDtoList));
+  }
+
   @DeleteMapping("/{teamId}")
   public ResponseEntity<ApiResponse<Void>> deleteTeam(
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long teamId) {

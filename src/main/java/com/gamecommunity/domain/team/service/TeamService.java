@@ -65,6 +65,21 @@ public class TeamService {
     return teamResponsePage;
   }
 
+  public Page<TeamResponseDto> getTeams(int page, int size, String sortKey, boolean isAsc) {
+    Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+    Sort sort = Sort.by(direction, sortKey);
+    Pageable pageable = PageRequest.of(page, size, sort);
+
+    Page<Team> teamList = teamRepository.findAll(pageable);
+
+    Page<TeamResponseDto> teamResponsePage = teamList.map(
+        TeamResponseDto::new);
+
+    return teamResponsePage;
+  }
+
+
+
   public void deleteTeam(User user, Long teamId) {
 
     Team team = teamRepository.findByTeamId(teamId).orElseThrow(() ->
@@ -97,5 +112,6 @@ public class TeamService {
 
     return team.getTeamAdminId().equals(user.getId());
   }
+
 }
 
