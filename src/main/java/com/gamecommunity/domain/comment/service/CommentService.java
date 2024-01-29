@@ -15,6 +15,7 @@ import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +49,7 @@ public class CommentService {
     Long parentId = commentRequestDto.parentId();
     System.out.println("parentId = " + parentId);
     String content = commentRequestDto.content();
+    Boolean accept = commentRequestDto.accept();
     if (parentId == 0) {
       // 최상위 댓글
       Comment comment = Comment.builder()
@@ -59,6 +61,7 @@ public class CommentService {
           .content(content)
           .user(user)
           .post(post)
+          .accept(accept)
           .build();
       commentRepository.save(comment);
     } else {
@@ -78,6 +81,7 @@ public class CommentService {
           .content(content)
           .user(user)
           .post(post)
+          .accept(accept)
           .build();
 
       //부모 댓글의 자식컬럼수 + 1 업데이트
@@ -152,15 +156,14 @@ public class CommentService {
   }
 
   public Page<CommentResponseDto> getComments(
-      int page, int size, String sortKey, boolean isAsc,
+      int page, int size,
       Long postId) {
     Post post = postRepository.findByPostId(postId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_POST_EXCEPTION));
 
     // 페이징 및 정렬처리
-    Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-    Sort sort = Sort.by(direction, sortKey);
-    Pageable pageable = PageRequest.of(page, size, sort);
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ref")
+        .and(Sort.by(Sort.Direction.ASC, "refOrder")));
 
     Page<Comment> commentList = commentRepository
         .findAllByPost(post, pageable);
