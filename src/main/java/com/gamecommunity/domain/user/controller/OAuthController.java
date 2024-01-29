@@ -37,7 +37,6 @@ public class OAuthController {
     String refresh = URLEncoder.encode(tokenDto.refreshToken(), "utf-8").replaceAll("\\+", "%20");
 
     HttpHeaders headers = new HttpHeaders();
-//    headers.setLocation(URI.create("https://game-community-project.github.io/front-end/oauth?access="+access+"&refresh="+refresh+""));
     headers.setLocation(URI.create("https://game-community-project.github.io/front-end/?access="+access+"&refresh="+refresh+""));
     return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
   }
