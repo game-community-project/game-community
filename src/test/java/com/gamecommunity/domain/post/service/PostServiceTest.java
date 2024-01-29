@@ -248,15 +248,11 @@ class PostServiceTest implements CommentTest {
     // given
     Long postId = TEST_POST_ID;
     Post post = TEST_POST;
-    UserDetailsImpl userDetails = TEST_USER_DETAILS;
-    User loginUser = userDetails.getUser();
-
-    given(authenticationHelper.checkAuthentication(userDetails)).willReturn(loginUser);
 
     given(postRepository.findById(postId)).willReturn(Optional.of(post));
 
     // when
-    postService.closePost(postId, userDetails);
+    postService.closePost(postId);
 
     // then
     verify(postRepository, times(1)).save(post);

@@ -103,7 +103,7 @@ public class PostController {
       @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
 
-    postService.closePost(postId, userDetails);
+    postService.closePost(postId);
     return ResponseEntity.ok(ApiResponse.ok("게시글 마감 성공", null));
   }
 

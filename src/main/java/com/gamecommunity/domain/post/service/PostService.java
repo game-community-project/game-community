@@ -103,8 +103,8 @@ public class PostService {
   }
 
   @Transactional
-  public void closePost(Long postId, UserDetailsImpl userDetails) {
-    Post post = getAuthenticationPost(postId, userDetails);
+  public void closePost(Long postId) {
+    Post post = getFindPost(postId);
 
     post.setClose(true);
     postRepository.save(post);
@@ -119,7 +119,7 @@ public class PostService {
 
     comment.setAccepted(true);
     commentRepository.save(comment);
-    closePost(comment.getPost().getPostId(), userDetails);
+    closePost(comment.getPost().getPostId());
   }
 
   // 게시글 가져오는 메서드
