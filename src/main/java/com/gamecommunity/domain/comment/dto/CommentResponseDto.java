@@ -7,6 +7,7 @@ public record CommentResponseDto(
     Long commentId,
     String author,
     String content,
+    Boolean accept,
     LocalDateTime createdAt,
     LocalDateTime modifiedAt
 ) {
@@ -15,6 +16,7 @@ public record CommentResponseDto(
     this(comment.getCommentId(),
         comment.getUser().getNickname(),
         comment.getContent(),
+        comment.getAccept(),
         comment.getCreatedAt(),
         comment.getModifiedAt());
   }

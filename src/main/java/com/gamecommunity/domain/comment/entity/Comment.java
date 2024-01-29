@@ -33,6 +33,9 @@ public class Comment extends TimeStamped {
   @Column(nullable = false)
   private String content;
 
+  @Column(nullable = false)
+  private Boolean accept;
+
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
@@ -45,9 +48,15 @@ public class Comment extends TimeStamped {
     this.user = user;
     this.post = post;
     this.content = requestDto.content();
+    this.accept = false;
   }
 
   public void update(CommentRequestDto requestDto) {
     this.content = requestDto.content();
   }
+
+  public void setAccepted(boolean accept) {
+    this.accept = accept;
+  }
+
 }

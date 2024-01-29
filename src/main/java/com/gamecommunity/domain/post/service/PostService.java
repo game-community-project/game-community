@@ -2,6 +2,8 @@ package com.gamecommunity.domain.post.service;
 
 import static com.gamecommunity.domain.user.entity.UserRoleEnum.ADMIN;
 
+import com.gamecommunity.domain.comment.entity.Comment;
+import com.gamecommunity.domain.comment.repository.CommentRepository;
 import com.gamecommunity.domain.post.dto.PostRequestDto;
 import com.gamecommunity.domain.post.dto.PostResponseDto;
 import com.gamecommunity.domain.post.entity.Post;
@@ -32,6 +34,7 @@ public class PostService {
 
   private final AuthenticationHelper authenticationHelper;
 
+  private final CommentRepository commentRepository;
 
   @Transactional
   public PostResponseDto createPost(
@@ -59,13 +62,6 @@ public class PostService {
     Post post = getFindPost(postId);
 
     return PostResponseDto.fromEntity(post);
-  }
-
-  // 게시글 가져오는 메서드
-  public Post getFindPost(Long postId) {
-    return postRepository.findById(postId)
-        .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
-            ErrorCode.NOT_FOUND_POST_EXCEPTION));
   }
 
   public Page<PostResponseDto> getPosts(
@@ -106,8 +102,35 @@ public class PostService {
     postRepository.delete(post);
   }
 
+  @Transactional
+  public void closePost(Long postId) {
+    Post post = getFindPost(postId);
+
+    post.setClose(true);
+    postRepository.save(post);
+  }
+
+  @Transactional
+  public void acceptComment(Long postId, Long commentId, UserDetailsImpl userDetails) {
+    Post post = getAuthenticationPost(postId, userDetails);
+
+    Comment comment = commentRepository.findByCommentId(commentId).orElseThrow(() ->
+        new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT_EXCEPTION));
+
+    comment.setAccepted(true);
+    commentRepository.save(comment);
+    closePost(comment.getPost().getPostId());
+  }
+
+  // 게시글 가져오는 메서드
+  public Post getFindPost(Long postId) {
+    return postRepository.findById(postId)
+        .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
+            ErrorCode.NOT_FOUND_POST_EXCEPTION));
+  }
+
   // 인증된 게시글 가져오는 메서드
-  private Post getAuthenticationPost(Long postId, UserDetailsImpl userDetails) {
+  public Post getAuthenticationPost(Long postId, UserDetailsImpl userDetails) {
     User loginUser = authenticationHelper.checkAuthentication(userDetails);
 
     Post post = getFindPost(postId);
@@ -121,5 +144,6 @@ public class PostService {
     }
     return post;
   }
+
 
 }

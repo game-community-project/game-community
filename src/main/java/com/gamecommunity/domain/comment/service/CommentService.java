@@ -11,6 +11,7 @@ import com.gamecommunity.domain.post.service.PostService;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
+import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,4 +81,5 @@ public class CommentService {
 
     return commentList.map(CommentResponseDto::new);
   }
+
 }

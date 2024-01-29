@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -35,7 +36,8 @@ public class PostController {
   public ResponseEntity<?> createPost(
       @RequestPart(value = "requestDto") PostRequestDto requestDto,
       @RequestPart(value = "file", required = false) MultipartFile file,
-      @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) throws IOException {
 
     PostResponseDto responseDto = postService.createPost(
         requestDto, file, userDetails);
@@ -74,7 +76,8 @@ public class PostController {
       @PathVariable Long postId,
       @RequestPart(value = "requestDto") PostRequestDto requestDto,
       @RequestPart(value = "file", required = false) MultipartFile file,
-      @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) throws IOException {
 
     PostResponseDto responseDto = postService.updatePost(postId, requestDto, file, userDetails);
     return ResponseEntity.ok(ApiResponse.ok("게시글 수정 성공", responseDto));
@@ -85,10 +88,23 @@ public class PostController {
   @DeleteMapping("/{postId}")
   public ResponseEntity<?> deletePost(
       @PathVariable Long postId,
-      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
 
     postService.deletePost(postId, userDetails);
     return ResponseEntity.ok(ApiResponse.ok("게시글 삭제 성공", null));
+  }
+
+  // 게시글 마감
+  @Timer
+  @PutMapping("/{postId}/close")
+  public ResponseEntity<?> closePost(
+      @PathVariable Long postId,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+
+    postService.closePost(postId);
+    return ResponseEntity.ok(ApiResponse.ok("게시글 마감 성공", null));
   }
 
 }

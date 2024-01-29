@@ -17,6 +17,7 @@ public interface CommentTest extends PostTest, UserTest {
   Comment TEST_COMMENT = Comment.builder()
       .commentId(TEST_COMMENT_ID)
       .content(TEST_COMMENT_CONTENT)
+      .accept(false)
       .user(TEST_USER)
       .post(TEST_POST)
       .build();
@@ -24,6 +25,7 @@ public interface CommentTest extends PostTest, UserTest {
   Comment TEST_ANOTHER_COMMENT = Comment.builder()
       .commentId(TEST_ANOTHER_COMMENT_ID)
       .content(TEST_ANOTHER_COMMENT_CONTENT)
+      .accept(false)
       .user(TEST_USER)
       .post(TEST_POST)
       .build();
