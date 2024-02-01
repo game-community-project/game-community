@@ -93,4 +93,10 @@ public class Comment extends TimeStamped {
   public void setAccepted(boolean accept) {
     this.accept = accept;
   }
+
+  public void decrementChildCount() {
+    this.childCount -= 1;
+  }
+
+
 }

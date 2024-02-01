@@ -155,10 +155,25 @@ public class CommentService {
       throw new BusinessException(HttpStatus.BAD_REQUEST,
           ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
-    if (comment.getChildCount().equals(0L)) {
-      commentRepository.delete(comment);
+    if (comment.getChildCount().equals(0L)) { //자식이 없다.
+      deleteCommentCascade(comment);
     } else {
+      // 자식이 있다.
       comment.toggleDeleted();
+    }
+  }
+
+
+  public void deleteCommentCascade(Comment comment) {
+    if (comment.getParentId().equals(0L)) { // 부모 없음 -> 바로 삭제
+      commentRepository.delete(comment);
+    } else { // 부모 있음 -> 계속 루트까지 올라감
+      Comment parentComment = comment.getParentComment();
+      parentComment.decrementChildCount();
+      commentRepository.delete(comment);
+      if (parentComment.getIsDeleted().equals(true)) {
+        deleteCommentCascade(parentComment);
+      }
     }
   }
 
