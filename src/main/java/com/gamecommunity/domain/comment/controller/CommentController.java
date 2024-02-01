@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +40,7 @@ public class CommentController {
       @RequestBody CommentRequestDto commentRequestDto
   ) {
     User user = userDetails.getUser();
+    System.out.println(commentRequestDto);
     commentService.createComment(user, postId,
         commentRequestDto);
     return ResponseEntity.ok(ApiResponse.ok("댓글 생성 성공", null));
@@ -70,12 +72,11 @@ public class CommentController {
 
   @GetMapping
   public ResponseEntity<ApiResponse<Page<CommentResponseDto>>> getComments(
-      @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam("page") int page,
       @RequestParam("size") int size,
       @PathVariable Long postId) {
-    Page<CommentResponseDto> commentResponseDto = commentService.getComments(page-1, size,postId);
-
+    Page<CommentResponseDto> commentResponseDto = commentService.getComments(page - 1, size,
+        postId);
     return ResponseEntity.ok(ApiResponse.ok("댓글 조회 성공", commentResponseDto));
   }
 

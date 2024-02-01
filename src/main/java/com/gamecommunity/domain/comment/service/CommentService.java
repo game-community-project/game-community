@@ -38,7 +38,6 @@ public class CommentService {
     Post post = postRepository.findByPostId(postId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_POST_EXCEPTION));
     List<Comment> comments = commentRepository.findAllByPost(post);
-    System.out.println("comments = " + comments);
     Long commentRef = null;
     if (!comments.isEmpty()) {
       commentRef = Collections.max(comments, Comparator.comparing(Comment::getRef)).getRef();
@@ -62,6 +61,8 @@ public class CommentService {
           .user(user)
           .post(post)
           .accept(accept)
+          .parentComment(null)
+          .isDeleted(false)
           .build();
       commentRepository.save(comment);
     } else {
@@ -82,11 +83,13 @@ public class CommentService {
           .user(user)
           .post(post)
           .accept(accept)
+          .parentComment(parentComment)
+          .isDeleted(false)
           .build();
 
       //부모 댓글의 자식컬럼수 + 1 업데이트
       commentRepository.updateChildCount(parentComment.getCommentId(),
-          parentComment.getChildCount()+1);
+          parentComment.getChildCount() + 1);
 
       commentRepository.save(comment);
     }
@@ -143,6 +146,7 @@ public class CommentService {
   }
 
 
+  @Transactional
   public void deleteComment(User user, Long commentId) {
     Comment comment = commentRepository.findByCommentId(commentId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_COMMENT_EXCEPTION));
@@ -151,13 +155,17 @@ public class CommentService {
       throw new BusinessException(HttpStatus.BAD_REQUEST,
           ErrorCode.AUTHENTICATION_MISMATCH_EXCEPTION);
     }
-
-    commentRepository.delete(comment);
+    if (comment.getChildCount().equals(0L)) {
+      commentRepository.delete(comment);
+    } else {
+      comment.toggleDeleted();
+    }
   }
 
   public Page<CommentResponseDto> getComments(
       int page, int size,
       Long postId) {
+
     Post post = postRepository.findByPostId(postId).orElseThrow(() ->
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_POST_EXCEPTION));
 
