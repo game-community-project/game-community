@@ -1,5 +1,6 @@
 package com.gamecommunity.chatRoom.service;
 
+import com.gamecommunity.chatRoom.dto.ChatMessageDto;
 import com.gamecommunity.chatRoom.entity.ChatMessage;
 import com.gamecommunity.chatRoom.entity.ChatRoom;
 import com.gamecommunity.chatRoom.entity.ChatUserRoom;
@@ -61,14 +62,14 @@ public class ChatRoomService {
   }
 
   // 채팅 저장
-  public void saveChat(Long chatRoomId, Long userId, String content) {
+  public void saveChat(Long chatRoomId, Long userId, ChatMessageDto chatMessageDto) {
     ChatRoom chatRoom = getChatRoom(chatRoomId);
     User user = getUser(userId);
 
     ChatMessage chat = ChatMessage.builder()
             .user(user)
             .chatRooms(chatRoom)
-            .chatContent(content)
+            .chatContent(chatMessageDto.getChatContent())
             .build();
 
     chatRepository.save(chat);

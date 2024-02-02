@@ -1,5 +1,6 @@
 package com.gamecommunity.chatRoom.controller;
 
+import com.gamecommunity.chatRoom.dto.ChatMessageDto;
 import com.gamecommunity.chatRoom.entity.ChatRoom;
 import com.gamecommunity.chatRoom.service.ChatRoomService;
 import com.gamecommunity.global.response.ApiResponse;
@@ -48,9 +49,9 @@ public class ChatRoomController {
   public ResponseEntity<ApiResponse> saveChat(
           @PathVariable Long chatRoomId,
           @AuthenticationPrincipal UserDetailsImpl userDetails,
-          @RequestBody String content
+          @RequestBody ChatMessageDto chatMessageDto
   ) {
-    chatRoomService.saveChat(chatRoomId, userDetails.getUser().getId(), content);
+    chatRoomService.saveChat(chatRoomId, userDetails.getUser().getId(), chatMessageDto);
     return ResponseEntity.ok(ApiResponse.ok("채팅 저장 성공", null));
   }
 
