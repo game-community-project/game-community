@@ -45,6 +45,15 @@ public class ChatRoomController {
     return ResponseEntity.ok(ApiResponse.ok("채팅방 전체 조회 성공", chatRooms));
   }
 
+  // 특정 채팅방 조회
+  @GetMapping("/chat/{chatRoomId}")
+  public ResponseEntity<ApiResponse<ChatRoomDto>> getChatRoom(
+          @PathVariable Long chatRoomId
+  ) {
+    ChatRoomDto chatRoomDto = chatRoomService.getChatRoom(chatRoomId);
+    return ResponseEntity.ok(ApiResponse.ok("특정 채팅방 조회 성공", chatRoomDto)); // 수정 예정
+  }
+
   // 채팅 저장
   @PostMapping("/saveChat/{chatRoomId}")
   public ResponseEntity<ApiResponse> saveChat(

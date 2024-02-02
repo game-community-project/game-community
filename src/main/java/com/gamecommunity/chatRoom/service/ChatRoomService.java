@@ -68,9 +68,23 @@ public class ChatRoomService {
             .collect(Collectors.toList());
   }
 
+  // 특정 채팅방 조회
+  public ChatRoomDto getChatRoom(Long chatRoomId) {
+    ChatRoom chatRoom = findChatRoom(chatRoomId);
+
+    ChatRoomDto chatRoomDto = new ChatRoomDto();
+    chatRoomDto.setId(chatRoom.getId());
+    chatRoomDto.setChatName(chatRoom.getChatName());
+    chatRoomDto.setCreatedAt(chatRoom.getCreatedAt());
+
+    return chatRoomDto;
+  }
+
+
+
   // 채팅 저장
   public void saveChat(Long chatRoomId, Long userId, ChatMessageDto chatMessageDto) {
-    ChatRoom chatRoom = getChatRoom(chatRoomId);
+    ChatRoom chatRoom = findChatRoom(chatRoomId);
     User user = getUser(userId);
 
     ChatMessage chat = ChatMessage.builder()
@@ -93,7 +107,7 @@ public class ChatRoomService {
     chatUserRepository.delete(chatUserRoom);
   }
 
-  public ChatRoom getChatRoom(Long chatRoomId) {
+  public ChatRoom findChatRoom(Long chatRoomId) {
     return chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
                     ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION));
