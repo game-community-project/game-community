@@ -185,7 +185,7 @@ public class CommentService {
         new BusinessException(HttpStatus.BAD_REQUEST, ErrorCode.NOT_FOUND_POST_EXCEPTION));
 
     // 페이징 및 정렬처리
-    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "ref")
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "ref")
         .and(Sort.by(Sort.Direction.ASC, "refOrder")));
 
     Page<Comment> commentList = commentRepository
