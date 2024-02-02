@@ -16,7 +16,9 @@ import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -80,7 +82,22 @@ public class ChatRoomService {
     return chatRoomDto;
   }
 
+  // 특정 채팅방의 메세지 조회
+  public List<ChatMessageDto> getChatMsg(Long chatRoomId, UserDetailsImpl userDetails) {
+    Optional<ChatUserRoom> chatUserRoom = chatUserRepository.findByChatRoomsIdAndUserId(chatRoomId, userDetails.getUser().getId());
 
+    return chatUserRoom.map(userRoom -> userRoom.getChatMessages().stream()
+                    .map(chatMessage -> {
+                      ChatMessageDto chatMessageDto = new ChatMessageDto();
+                      chatMessageDto.setId(chatMessage.getId());
+                      chatMessageDto.setNickname(chatMessage.getUser().getNickname());
+                      chatMessageDto.setChatContent(chatMessage.getChatContent());
+                      chatMessageDto.setCreatedAt(chatMessage.getCreatedAt());
+                      return chatMessageDto;
+                    })
+                    .collect(Collectors.toList()))
+            .orElse(Collections.emptyList());
+  }
 
   // 채팅 저장
   public void saveChat(Long chatRoomId, Long userId, ChatMessageDto chatMessageDto) {

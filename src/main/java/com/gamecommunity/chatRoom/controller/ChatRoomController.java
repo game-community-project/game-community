@@ -54,6 +54,16 @@ public class ChatRoomController {
     return ResponseEntity.ok(ApiResponse.ok("특정 채팅방 조회 성공", chatRoomDto)); // 수정 예정
   }
 
+  // 특정 채팅방의 메세지 조회
+  @GetMapping("/chat/{chatRoomId}/messages")
+  public ResponseEntity<ApiResponse<List<ChatMessageDto>>> getChatMsg(
+          @PathVariable Long chatRoomId,
+          @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    List<ChatMessageDto> chatMsg = chatRoomService.getChatMsg(chatRoomId, userDetails);
+    return ResponseEntity.ok(ApiResponse.ok("특정 채팅방의 메세지 조회 성공", chatMsg));
+  }
+
   // 채팅 저장
   @PostMapping("/saveChat/{chatRoomId}")
   public ResponseEntity<ApiResponse> saveChat(
