@@ -1,5 +1,6 @@
 package com.gamecommunity.chatRoom.service;
 
+import com.gamecommunity.chatRoom.entity.ChatMessage;
 import com.gamecommunity.chatRoom.entity.ChatRoom;
 import com.gamecommunity.chatRoom.entity.ChatUserRoom;
 import com.gamecommunity.chatRoom.repository.ChatRepository;
@@ -7,11 +8,11 @@ import com.gamecommunity.chatRoom.repository.ChatRoomRepository;
 import com.gamecommunity.chatRoom.repository.ChatUserRepository;
 import com.gamecommunity.domain.post.entity.Post;
 import com.gamecommunity.domain.post.repository.PostRepository;
+import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.domain.user.repository.UserRepository;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -58,7 +59,32 @@ public class ChatRoomService {
             .collect(Collectors.toList());
   }
 
+  // 채팅 저장
+  public void saveChat(Long chatRoomId, Long userId, String content) {
+    ChatRoom chatRoom = getChatRoom(chatRoomId);
+    User user = getUser(userId);
 
+    ChatMessage chat = ChatMessage.builder()
+            .user(user)
+            .chatRooms(chatRoom)
+            .chatContent(content)
+            .build();
+
+    chatRepository.save(chat);
+  }
+
+
+
+  public ChatRoom getChatRoom(Long chatRoomId) {
+    return chatRoomRepository.findById(chatRoomId)
+            .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
+                    ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION));
+  }
+  public User getUser(Long userId) {
+    return userRepository.findById(userId)
+            .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
+                    ErrorCode.NOT_FOUND_USER_EXCEPTION));
+  }
 
   public Post getFindPost(Long postId) {
     return postRepository.findById(postId)

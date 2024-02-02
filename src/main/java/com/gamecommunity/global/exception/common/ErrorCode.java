@@ -37,7 +37,10 @@ public enum ErrorCode {
   NOT_FOUND_GAME_EXCEPTION("해당 게임은 존재하지 않습니다."),
 
   // comment
-  NOT_FOUND_COMMENT_EXCEPTION("해당 댓글을 찾을 수 없습니다.");
+  NOT_FOUND_COMMENT_EXCEPTION("해당 댓글을 찾을 수 없습니다."),
+
+  // chat
+  NOT_FOUND_CHATROOM_EXCEPTION("해당 채팅방을 찾을 수 없습니다.");
 
 
 
