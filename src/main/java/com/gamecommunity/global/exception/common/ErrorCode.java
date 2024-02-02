@@ -40,7 +40,8 @@ public enum ErrorCode {
   NOT_FOUND_COMMENT_EXCEPTION("해당 댓글을 찾을 수 없습니다."),
 
   // chat
-  NOT_FOUND_CHATROOM_EXCEPTION("해당 채팅방을 찾을 수 없습니다.");
+  NOT_FOUND_CHATROOM_EXCEPTION("해당 채팅방을 찾을 수 없습니다."),
+  NOT_FOUND_CHATROOM_MEMBER_EXCEPTION("사용자가 채팅방의 멤버가 아닙니다");
 
 
 

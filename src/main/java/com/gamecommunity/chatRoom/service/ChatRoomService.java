@@ -13,6 +13,7 @@ import com.gamecommunity.domain.user.repository.UserRepository;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -73,13 +74,23 @@ public class ChatRoomService {
     chatRepository.save(chat);
   }
 
+  // 채팅방 나가기
+  public void leaveChatRoom(Long chatRoomId, UserDetailsImpl userDetails) {
 
+    ChatUserRoom chatUserRoom = chatUserRepository.findByChatRoomsIdAndUserId(chatRoomId,
+                    userDetails.getUser().getId())
+            .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
+                    ErrorCode.NOT_FOUND_CHATROOM_MEMBER_EXCEPTION));
+
+    chatUserRepository.delete(chatUserRoom);
+  }
 
   public ChatRoom getChatRoom(Long chatRoomId) {
     return chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
                     ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION));
   }
+
   public User getUser(Long userId) {
     return userRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
