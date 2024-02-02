@@ -13,8 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,19 +41,20 @@ public class CommentController {
       @RequestBody CommentRequestDto commentRequestDto
   ) {
     User user = userDetails.getUser();
-    CommentResponseDto commentResponseDto = commentService.createComment(user, postId,
+    System.out.println(commentRequestDto);
+    commentService.createComment(user, postId,
         commentRequestDto);
     return ResponseEntity.ok(ApiResponse.ok("댓글 생성 성공", null));
   }
 
-  @PutMapping("/{commentId}")
+  @PatchMapping("/{commentId}")
   public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable Long commentId,
       @RequestBody CommentRequestDto commentRequestDto
   ) {
     User user = userDetails.getUser();
-    CommentResponseDto commentResponseDto = commentService.updateComment(user, commentId,
+    commentService.updateComment(user, commentId,
         commentRequestDto);
 
     return ResponseEntity.ok(ApiResponse.ok("댓글 수정 성공", null));
@@ -70,14 +73,11 @@ public class CommentController {
 
   @GetMapping
   public ResponseEntity<ApiResponse<Page<CommentResponseDto>>> getComments(
-      @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam("page") int page,
       @RequestParam("size") int size,
-      @RequestParam("sortBy") String sortBy,
-      @RequestParam("isAsc") boolean isAsc,
       @PathVariable Long postId) {
-    Page<CommentResponseDto> commentResponseDto = commentService.getComments(page-1, size,sortBy,isAsc,postId);
-
+    Page<CommentResponseDto> commentResponseDto = commentService.getComments(page - 1, size,
+        postId);
     return ResponseEntity.ok(ApiResponse.ok("댓글 조회 성공", commentResponseDto));
   }
 
