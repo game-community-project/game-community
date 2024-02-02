@@ -1,7 +1,7 @@
 package com.gamecommunity.chatRoom.service;
 
 import com.gamecommunity.chatRoom.entity.ChatRoom;
-import com.gamecommunity.chatRoom.entity.ChatUser;
+import com.gamecommunity.chatRoom.entity.ChatUserRoom;
 import com.gamecommunity.chatRoom.repository.ChatRepository;
 import com.gamecommunity.chatRoom.repository.ChatRoomRepository;
 import com.gamecommunity.chatRoom.repository.ChatUserRepository;
@@ -11,6 +11,9 @@ import com.gamecommunity.domain.user.repository.UserRepository;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -38,13 +41,24 @@ public class ChatRoomService {
 
     chatRoomRepository.save(chatRoom);
 
-    ChatUser chatUser = ChatUser.builder()
+    ChatUserRoom chatUserRoom = ChatUserRoom.builder()
             .user(userDetails.getUser())
             .chatRooms(chatRoom)
             .build();
 
-    chatUserRepository.save(chatUser);
+    chatUserRepository.save(chatUserRoom);
   }
+
+  // 유저가 속한 채팅방 전체 조회
+  public List<ChatRoom> getChatRooms(Long userId) {
+    List<ChatUserRoom> chatUserRooms = chatUserRepository.findAllByUserId(userId);
+
+    return chatUserRooms.stream()
+            .map(ChatUserRoom::getChatRooms)
+            .collect(Collectors.toList());
+  }
+
+
 
   public Post getFindPost(Long postId) {
     return postRepository.findById(postId)
