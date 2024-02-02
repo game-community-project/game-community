@@ -2,22 +2,20 @@ package com.gamecommunity.chatRoom.controller;
 
 import com.gamecommunity.chatRoom.dto.ChatMessageDto;
 import com.gamecommunity.chatRoom.dto.ChatRoomDto;
-import com.gamecommunity.chatRoom.entity.ChatRoom;
 import com.gamecommunity.chatRoom.service.ChatRoomService;
 import com.gamecommunity.global.response.ApiResponse;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/api/chat")
@@ -26,13 +24,14 @@ public class ChatRoomController {
 
   private final ChatRoomService chatRoomService;
 
-  // 게시글 작성자와 채팅을 건 사용자 간의 채팅방 생성
-  @PostMapping("/chat/posts/{postId}/create")
+  // 채팅방 생성
+  @PostMapping("/chat/create")
   public ResponseEntity<ApiResponse<Long>> createChatRoom(
-          @PathVariable Long postId,
-          @AuthenticationPrincipal UserDetailsImpl userDetails
+          @AuthenticationPrincipal UserDetailsImpl userDetails,
+          @RequestParam Long secondUserId
+
   ) {
-    Long chatRoomId = chatRoomService.createChatRoom(postId, userDetails);
+    Long chatRoomId = chatRoomService.createChatRoom(userDetails, secondUserId);
     return ResponseEntity.ok(ApiResponse.ok("채팅방 생성 성공", chatRoomId));
   }
 

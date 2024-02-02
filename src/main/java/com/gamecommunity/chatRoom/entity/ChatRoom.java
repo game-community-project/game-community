@@ -27,12 +27,6 @@ public class ChatRoom extends TimeStamped {
   @Column(name = "chatRoom_id")
   private Long id;
 
-  // 게시글과 연관된 채팅방 생성
-  // 게시글과 채팅방을 일대일로 연결
-  @OneToOne
-  @JoinColumn(name = "post_id")
-  private Post post;
-
   private String chatName; // 채팅방 이름
 
   @Column(nullable = false)

@@ -8,14 +8,12 @@ import com.gamecommunity.chatRoom.entity.ChatUserRoom;
 import com.gamecommunity.chatRoom.repository.ChatRepository;
 import com.gamecommunity.chatRoom.repository.ChatRoomRepository;
 import com.gamecommunity.chatRoom.repository.ChatUserRepository;
-import com.gamecommunity.domain.post.entity.Post;
 import com.gamecommunity.domain.post.repository.PostRepository;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.domain.user.repository.UserRepository;
 import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -35,32 +33,34 @@ public class ChatRoomService {
   private final PostRepository postRepository;
   private final UserRepository userRepository;
 
-  // 게시글 작성자와 채팅을 건 사용자 간의 채팅방 생성
+  // 채팅방 생성
   @Transactional
-  public Long createChatRoom(Long postId, UserDetailsImpl userDetails) {
-    Post post = getFindPost(postId);
+  public Long createChatRoom(UserDetailsImpl userDetails, Long secondUserId) {
+    User firstUser = userDetails.getUser();
+    User secondUser = getUser(secondUserId);
 
-    User postAuthor = post.getUser();
-    User sender = userDetails.getUser();
+    // 두 유저 간의 채팅방 존재 여부 확인
+    Optional<ChatRoom> existingChatRoom = chatRoomRepository
+            .findChatRoomByMemberIds(firstUser.getId(), secondUser.getId());
 
-    ChatRoom chatRoom = chatRoomRepository.save(
+    ChatRoom chatRoom = existingChatRoom.orElseGet(() -> chatRoomRepository.save(
             ChatRoom.builder()
-                    .post(post)
-                    .chatName(post.getPostTitle())
+                    .chatName(firstUser.getNickname() + "님과 " + secondUser.getNickname() + "님의 채팅방 입니다.")
+                    .activated(true)
                     .build()
-    );
+    ));
 
-    // 채팅 참여자 추가 (게시글 작성자 | 채팅을 건 사용자)
-    ChatUserRoom postAuthorChatUserRoom = ChatUserRoom.builder()
-            .user(postAuthor)
+    // 채팅 참여자 추가
+    ChatUserRoom firstUserChatUserRoom = ChatUserRoom.builder()
+            .user(firstUser)
             .chatRooms(chatRoom)
             .build();
-    ChatUserRoom currentUserChatUserRoom = ChatUserRoom.builder()
-            .user(sender)
+    ChatUserRoom secondUserChatUserRoom = ChatUserRoom.builder()
+            .user(secondUser)
             .chatRooms(chatRoom)
             .build();
 
-    chatUserRepository.saveAll(List.of(postAuthorChatUserRoom, currentUserChatUserRoom));
+    chatUserRepository.saveAll(List.of(firstUserChatUserRoom, secondUserChatUserRoom));
 
     return chatRoom.getId(); // 채팅방 이동을 위한 id 반환
   }
@@ -73,9 +73,11 @@ public class ChatRoomService {
             .map(chatUserRoom -> {
               ChatRoom chatRoom = chatUserRoom.getChatRooms();
               ChatRoomDto chatRoomDto = new ChatRoomDto();
+
               chatRoomDto.setId(chatRoom.getId());
               chatRoomDto.setChatName(chatRoom.getChatName());
               chatRoomDto.setCreatedAt(chatRoom.getCreatedAt());
+
               return chatRoomDto;
             })
             .collect(Collectors.toList());
@@ -147,12 +149,6 @@ public class ChatRoomService {
     return userRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
                     ErrorCode.NOT_FOUND_USER_EXCEPTION));
-  }
-
-  public Post getFindPost(Long postId) {
-    return postRepository.findById(postId)
-            .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
-                    ErrorCode.NOT_FOUND_POST_EXCEPTION));
   }
 
 }
