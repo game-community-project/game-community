@@ -8,7 +8,6 @@ import com.gamecommunity.chatRoom.entity.ChatUserRoom;
 import com.gamecommunity.chatRoom.repository.ChatRepository;
 import com.gamecommunity.chatRoom.repository.ChatRoomRepository;
 import com.gamecommunity.chatRoom.repository.ChatUserRepository;
-import com.gamecommunity.domain.post.repository.PostRepository;
 import com.gamecommunity.domain.user.entity.User;
 import com.gamecommunity.domain.user.repository.UserRepository;
 import com.gamecommunity.global.exception.common.BusinessException;
@@ -30,7 +29,6 @@ public class ChatRoomService {
   private final ChatRoomRepository chatRoomRepository;
   private final ChatUserRepository chatUserRepository;
   private final ChatRepository chatRepository;
-  private final PostRepository postRepository;
   private final UserRepository userRepository;
 
   // 채팅방 생성

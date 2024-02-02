@@ -25,7 +25,7 @@ public class ChatRoomController {
   private final ChatRoomService chatRoomService;
 
   // 채팅방 생성
-  @PostMapping("/chat/create")
+  @PostMapping("/createRoom")
   public ResponseEntity<ApiResponse<Long>> createChatRoom(
           @AuthenticationPrincipal UserDetailsImpl userDetails,
           @RequestParam Long secondUserId
@@ -36,7 +36,7 @@ public class ChatRoomController {
   }
 
   // 유저가 속한 채팅방 전체 조회
-  @GetMapping("/chat/users/{userId}")
+  @GetMapping("/users/{userId}")
   public ResponseEntity<ApiResponse> getChatRooms(
           @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
@@ -45,7 +45,7 @@ public class ChatRoomController {
   }
 
   // 특정 채팅방 조회
-  @GetMapping("/chat/{chatRoomId}")
+  @GetMapping("/{chatRoomId}")
   public ResponseEntity<ApiResponse<ChatRoomDto>> getChatRoom(
           @PathVariable Long chatRoomId
   ) {
@@ -54,7 +54,7 @@ public class ChatRoomController {
   }
 
   // 특정 채팅방의 메세지 조회
-  @GetMapping("/chat/{chatRoomId}/messages")
+  @GetMapping("/{chatRoomId}/messages")
   public ResponseEntity<ApiResponse<List<ChatMessageDto>>> getChatMsg(
           @PathVariable Long chatRoomId,
           @AuthenticationPrincipal UserDetailsImpl userDetails
