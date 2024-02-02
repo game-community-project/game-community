@@ -1,6 +1,7 @@
 package com.gamecommunity.chatRoom.service;
 
 import com.gamecommunity.chatRoom.dto.ChatMessageDto;
+import com.gamecommunity.chatRoom.dto.ChatRoomDto;
 import com.gamecommunity.chatRoom.entity.ChatMessage;
 import com.gamecommunity.chatRoom.entity.ChatRoom;
 import com.gamecommunity.chatRoom.entity.ChatUserRoom;
@@ -31,7 +32,6 @@ public class ChatRoomService {
   private final PostRepository postRepository;
   private final UserRepository userRepository;
 
-  // sender는 임의, 전부 로그인한 유저 (userDetails로 변경 예정)
   // 게시글 생성 시 채팅방 생성
   public void createChatRoom(Long postId, UserDetailsImpl userDetails) {
     Post post = getFindPost(postId);
@@ -53,11 +53,18 @@ public class ChatRoomService {
   }
 
   // 유저가 속한 채팅방 전체 조회
-  public List<ChatRoom> getChatRooms(Long userId) {
-    List<ChatUserRoom> chatUserRooms = chatUserRepository.findAllByUserId(userId);
+  public List<ChatRoomDto> getChatRooms(Long userId) {
+    List<ChatUserRoom> chatUserRoomList = chatUserRepository.findAllByUserId(userId);
 
-    return chatUserRooms.stream()
-            .map(ChatUserRoom::getChatRooms)
+    return chatUserRoomList.stream()
+            .map(chatUserRoom -> {
+              ChatRoom chatRoom = chatUserRoom.getChatRooms();
+              ChatRoomDto chatRoomDto = new ChatRoomDto();
+              chatRoomDto.setId(chatRoom.getId());
+              chatRoomDto.setChatName(chatRoom.getChatName());
+              chatRoomDto.setCreatedAt(chatRoom.getCreatedAt());
+              return chatRoomDto;
+            })
             .collect(Collectors.toList());
   }
 

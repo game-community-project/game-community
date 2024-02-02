@@ -1,6 +1,7 @@
 package com.gamecommunity.chatRoom.controller;
 
 import com.gamecommunity.chatRoom.dto.ChatMessageDto;
+import com.gamecommunity.chatRoom.dto.ChatRoomDto;
 import com.gamecommunity.chatRoom.entity.ChatRoom;
 import com.gamecommunity.chatRoom.service.ChatRoomService;
 import com.gamecommunity.global.response.ApiResponse;
@@ -40,7 +41,7 @@ public class ChatRoomController {
   public ResponseEntity<ApiResponse> getChatRooms(
           @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    List<ChatRoom> chatRooms = chatRoomService.getChatRooms(userDetails.getUser().getId());
+    List<ChatRoomDto> chatRooms = chatRoomService.getChatRooms(userDetails.getUser().getId());
     return ResponseEntity.ok(ApiResponse.ok("채팅방 전체 조회 성공", chatRooms));
   }
 
