@@ -33,6 +33,9 @@ public class ChatRoom extends TimeStamped {
   @JoinColumn(name = "post_id")
   private Post post;
 
-  private String chatName;
+  private String chatName; // 채팅방 이름
+
+  @Column(nullable = false)
+  private boolean activated;
 
 }
