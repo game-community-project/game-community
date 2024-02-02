@@ -111,6 +111,7 @@ public class ChatRoomService {
   }
 
   // 채팅 저장
+  @Transactional
   public void saveChat(Long chatRoomId, Long userId, ChatMessageDto chatMessageDto) {
     ChatRoom chatRoom = findChatRoom(chatRoomId);
     User user = getUser(userId);
@@ -125,6 +126,7 @@ public class ChatRoomService {
   }
 
   // 채팅방 나가기
+  @Transactional
   public void leaveChatRoom(Long chatRoomId, UserDetailsImpl userDetails) {
 
     ChatUserRoom chatUserRoom = chatUserRepository.findByChatRoomsIdAndUserId(chatRoomId,
