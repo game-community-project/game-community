@@ -38,34 +38,31 @@ public class ChatRoomService {
     User secondUser = getUser(secondUserId);
 
     // 두 유저 간의 채팅방 존재 여부 확인
-    Optional<ChatRoom> existingChatRoom = chatRoomRepository
-            .findChatRoomByMemberIds(firstUser.getId(), secondUser.getId());
+    Optional<ChatUserRoom> existingChatUserRoom = chatUserRepository
+            .findChatUserRoomByFirstUserAndSecondUser(firstUser, secondUser);
 
-    ChatRoom chatRoom = existingChatRoom.orElseGet(() -> chatRoomRepository.save(
-            ChatRoom.builder()
-                    .chatName(firstUser.getNickname() + "님과 " + secondUser.getNickname() + "님의 채팅방 입니다.")
-                    .activated(true)
-                    .build()
-    ));
-
-    // 채팅 참여자 추가
-    ChatUserRoom firstUserChatUserRoom = ChatUserRoom.builder()
-            .user(firstUser)
-            .chatRooms(chatRoom)
-            .build();
-    ChatUserRoom secondUserChatUserRoom = ChatUserRoom.builder()
-            .user(secondUser)
-            .chatRooms(chatRoom)
-            .build();
-
-    chatUserRepository.saveAll(List.of(firstUserChatUserRoom, secondUserChatUserRoom));
-
-    return chatRoom.getId(); // 채팅방 이동을 위한 id 반환
+    ChatRoom chatRoom = existingChatUserRoom.map(ChatUserRoom::getChatRooms)
+            .orElseGet(() -> {
+              ChatRoom newChatRoom = chatRoomRepository.save(
+                      ChatRoom.builder()
+                              .chatName(firstUser.getNickname() + "님과 " + secondUser.getNickname() + "님의 채팅방 입니다.")
+                              .activated(true)
+                              .build()
+              );
+              ChatUserRoom firstUserChatUserRoom = new ChatUserRoom(firstUser, secondUser);
+              firstUserChatUserRoom.setChatRooms(newChatRoom);
+              ChatUserRoom secondUserChatUserRoom = new ChatUserRoom(secondUser, firstUser);
+              secondUserChatUserRoom.setChatRooms(newChatRoom);
+              chatUserRepository.saveAll(List.of(firstUserChatUserRoom, secondUserChatUserRoom));
+              return newChatRoom;
+            });
+    return chatRoom.getId();
   }
 
   // 유저가 속한 채팅방 전체 조회
-  public List<ChatRoomDto> getChatRooms(Long userId) {
-    List<ChatUserRoom> chatUserRoomList = chatUserRepository.findAllByUserId(userId);
+  public List<ChatRoomDto> getChatRooms(UserDetailsImpl userDetails) {
+    List<ChatUserRoom> chatUserRoomList = chatUserRepository.findAllByFirstUser(
+            userDetails.getUser());
 
     return chatUserRoomList.stream()
             .map(chatUserRoom -> {
@@ -95,7 +92,7 @@ public class ChatRoomService {
 
   // 특정 채팅방의 메세지 조회
   public List<ChatMessageDto> getChatMsg(Long chatRoomId, UserDetailsImpl userDetails) {
-    Optional<ChatUserRoom> chatUserRoom = chatUserRepository.findByChatRoomsIdAndUserId(chatRoomId, userDetails.getUser().getId());
+    Optional<ChatUserRoom> chatUserRoom = chatUserRepository.findByChatRoomsIdAndFirstUser(chatRoomId, userDetails.getUser());
 
     return chatUserRoom.map(userRoom -> userRoom.getChatMessages().stream()
                     .map(chatMessage -> {
@@ -116,9 +113,12 @@ public class ChatRoomService {
     ChatRoom chatRoom = findChatRoom(chatRoomId);
     User user = getUser(userId);
 
+    ChatUserRoom chatUserRoom = chatUserRepository.findByChatRoomsIdAndFirstUser(chatRoomId, user)
+            .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND_CHATROOM_MEMBER_EXCEPTION));
+
     ChatMessage chat = ChatMessage.builder()
             .user(user)
-            .chatRooms(chatRoom)
+            .chatUserRoom(chatUserRoom)
             .chatContent(chatMessageDto.getChatContent())
             .build();
 
@@ -129,8 +129,8 @@ public class ChatRoomService {
   @Transactional
   public void leaveChatRoom(Long chatRoomId, UserDetailsImpl userDetails) {
 
-    ChatUserRoom chatUserRoom = chatUserRepository.findByChatRoomsIdAndUserId(chatRoomId,
-                    userDetails.getUser().getId())
+    ChatUserRoom chatUserRoom = chatUserRepository.findByChatRoomsIdAndFirstUser(chatRoomId,
+                    userDetails.getUser())
             .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND,
                     ErrorCode.NOT_FOUND_CHATROOM_MEMBER_EXCEPTION));
 

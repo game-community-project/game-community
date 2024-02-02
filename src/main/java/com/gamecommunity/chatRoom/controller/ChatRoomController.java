@@ -25,10 +25,10 @@ public class ChatRoomController {
   private final ChatRoomService chatRoomService;
 
   // 채팅방 생성
-  @PostMapping("/createRoom")
+  @PostMapping("/createRoom/{secondUserId}")
   public ResponseEntity<ApiResponse<Long>> createChatRoom(
           @AuthenticationPrincipal UserDetailsImpl userDetails,
-          @RequestParam Long secondUserId
+          @PathVariable Long secondUserId
 
   ) {
     Long chatRoomId = chatRoomService.createChatRoom(userDetails, secondUserId);
@@ -40,7 +40,7 @@ public class ChatRoomController {
   public ResponseEntity<ApiResponse> getChatRooms(
           @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    List<ChatRoomDto> chatRooms = chatRoomService.getChatRooms(userDetails.getUser().getId());
+    List<ChatRoomDto> chatRooms = chatRoomService.getChatRooms(userDetails);
     return ResponseEntity.ok(ApiResponse.ok("채팅방 전체 조회 성공", chatRooms));
   }
 
