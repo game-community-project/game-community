@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -34,24 +35,34 @@ public class ChatRoomService {
   private final PostRepository postRepository;
   private final UserRepository userRepository;
 
-  // 게시글 생성 시 채팅방 생성
-  public void createChatRoom(Long postId, UserDetailsImpl userDetails) {
+  // 게시글 작성자와 채팅을 건 사용자 간의 채팅방 생성
+  @Transactional
+  public Long createChatRoom(Long postId, UserDetailsImpl userDetails) {
     Post post = getFindPost(postId);
 
-    ChatRoom chatRoom = ChatRoom.builder()
-            .post(post)
-            .chatName(post.getPostTitle())
-            .activated(true)
+    User postAuthor = post.getUser();
+    User sender = userDetails.getUser();
+
+    ChatRoom chatRoom = chatRoomRepository.save(
+            ChatRoom.builder()
+                    .post(post)
+                    .chatName(post.getPostTitle())
+                    .build()
+    );
+
+    // 채팅 참여자 추가 (게시글 작성자 | 채팅을 건 사용자)
+    ChatUserRoom postAuthorChatUserRoom = ChatUserRoom.builder()
+            .user(postAuthor)
+            .chatRooms(chatRoom)
             .build();
-
-    chatRoomRepository.save(chatRoom);
-
-    ChatUserRoom chatUserRoom = ChatUserRoom.builder()
-            .user(userDetails.getUser())
+    ChatUserRoom currentUserChatUserRoom = ChatUserRoom.builder()
+            .user(sender)
             .chatRooms(chatRoom)
             .build();
 
-    chatUserRepository.save(chatUserRoom);
+    chatUserRepository.saveAll(List.of(postAuthorChatUserRoom, currentUserChatUserRoom));
+
+    return chatRoom.getId(); // 채팅방 이동을 위한 id 반환
   }
 
   // 유저가 속한 채팅방 전체 조회

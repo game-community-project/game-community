@@ -26,14 +26,14 @@ public class ChatRoomController {
 
   private final ChatRoomService chatRoomService;
 
-  // 게시글 생성 시 채팅방 생성
+  // 게시글 작성자와 채팅을 건 사용자 간의 채팅방 생성
   @PostMapping("/chat/posts/{postId}/create")
-  public ResponseEntity<ApiResponse> createChatRoom(
+  public ResponseEntity<ApiResponse<Long>> createChatRoom(
           @PathVariable Long postId,
           @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    chatRoomService.createChatRoom(postId, userDetails);
-    return ResponseEntity.ok(ApiResponse.ok("채팅방 생성 성공", null));
+    Long chatRoomId = chatRoomService.createChatRoom(postId, userDetails);
+    return ResponseEntity.ok(ApiResponse.ok("채팅방 생성 성공", chatRoomId));
   }
 
   // 유저가 속한 채팅방 전체 조회
