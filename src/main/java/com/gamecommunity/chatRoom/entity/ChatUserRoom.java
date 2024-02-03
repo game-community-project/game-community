@@ -38,7 +38,7 @@ public class ChatUserRoom extends TimeStamped {
   @JoinColumn(name = "second_user_id")
   private User secondUser; // 채팅 참여자와 연결된 두 번째 참여자
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne
   @JoinColumn(name = "chatRoom_id")
   private ChatRoom chatRooms; // 채팅 참여자와 연결된 채팅방
 
