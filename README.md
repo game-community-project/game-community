@@ -1,6 +1,7 @@
 # SPARTA GAMECLUB
 ![image](https://github.com/game-community-project/game-community/assets/140589023/e733dd52-7c66-4bf9-8b62-47de32ff7575)
 
+[![GameCommunity](https://github.com/game-community-project/game-community/actions/workflows/ci.yml/badge.svg)](https://github.com/game-community-project/game-community/actions/workflows/ci.yml)
 [![GameCommunity Deploy](https://github.com/game-community-project/game-community/actions/workflows/cd.yml/badge.svg)](https://github.com/game-community-project/game-community/actions/workflows/cd.yml)
 
 ## 프로젝트 개요
