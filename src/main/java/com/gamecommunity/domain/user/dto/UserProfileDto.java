@@ -9,6 +9,7 @@ import lombok.Builder;
 @Builder
 public record UserProfileDto(
 
+        Long userId,
         String nickname,
         String introduction,
         String profile_url,
@@ -19,6 +20,7 @@ public record UserProfileDto(
   public static UserProfileDto from(User user) {
 
     return UserProfileDto.builder()
+            .userId(user.getId())
             .nickname(user.getNickname())
             .introduction(user.getIntroduction())
             .profile_url(user.getProfileUrl())
