@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/teams/**").permitAll()
                         .requestMatchers("/api/posts/**").permitAll()
+                        .requestMatchers("/api/chat/**").permitAll()
                         .anyRequest().authenticated()
         );
 
