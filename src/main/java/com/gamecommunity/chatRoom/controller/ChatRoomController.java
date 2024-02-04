@@ -37,7 +37,7 @@ public class ChatRoomController {
   }
 
   // 유저가 속한 채팅방 전체 조회
-  @GetMapping("/users/{userId}")
+  @GetMapping("/list")
   public ResponseEntity<ApiResponse> getChatRooms(
           @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
