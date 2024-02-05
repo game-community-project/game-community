@@ -26,13 +26,13 @@ public class ChatRoomController {
   private final ChatRoomService chatRoomService;
 
   // 채팅방 생성
-  @PostMapping("/createRoom/{secondUserId}")
+  @PostMapping("/createRoom/{userId}")
   public ResponseEntity<ApiResponse<Long>> createChatRoom(
           @AuthenticationPrincipal UserDetailsImpl userDetails,
-          @PathVariable Long secondUserId
+          @PathVariable Long userId
 
   ) {
-    Long chatRoomId = chatRoomService.createChatRoom(userDetails, secondUserId);
+    Long chatRoomId = chatRoomService.createChatRoom(userDetails, userId);
     return ResponseEntity.ok(ApiResponse.ok("채팅방 생성 성공", chatRoomId));
   }
 
