@@ -57,10 +57,9 @@ public class ChatRoomController {
   // 특정 채팅방의 메세지 조회
   @GetMapping("/{chatRoomId}/messages")
   public ResponseEntity<ApiResponse<List<ChatMessageDto>>> getChatMsg(
-          @PathVariable Long chatRoomId,
-          @AuthenticationPrincipal UserDetailsImpl userDetails
+          @PathVariable Long chatRoomId
   ) {
-    List<ChatMessageDto> chatMsg = chatRoomService.getChatMsg(chatRoomId, userDetails);
+    List<ChatMessageDto> chatMsg = chatRoomService.getChatMsg(chatRoomId);
     return ResponseEntity.ok(ApiResponse.ok("특정 채팅방의 메세지 조회 성공", chatMsg));
   }
 
