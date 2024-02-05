@@ -14,6 +14,7 @@ import com.gamecommunity.global.exception.common.BusinessException;
 import com.gamecommunity.global.exception.common.ErrorCode;
 import com.gamecommunity.global.security.userdetails.UserDetailsImpl;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,10 +92,11 @@ public class ChatRoomService {
   }
 
   // 특정 채팅방의 메세지 조회
-  public List<ChatMessageDto> getChatMsg(Long chatRoomId, UserDetailsImpl userDetails) {
-    Optional<ChatUserRoom> chatUserRoom = chatUserRepository.findByChatRoomsIdAndFirstUser(chatRoomId, userDetails.getUser());
+  public List<ChatMessageDto> getChatMsg(Long chatRoomId) {
+    List<ChatUserRoom> chatUserRooms = chatUserRepository.findByChatRoomsId(chatRoomId);
 
-    return chatUserRoom.map(userRoom -> userRoom.getChatMessages().stream()
+    return chatUserRooms.stream()
+            .flatMap(userRoom -> userRoom.getChatMessages().stream()
                     .map(chatMessage -> {
                       ChatMessageDto chatMessageDto = new ChatMessageDto();
                       chatMessageDto.setId(chatMessage.getId());
@@ -102,9 +104,9 @@ public class ChatRoomService {
                       chatMessageDto.setChatContent(chatMessage.getChatContent());
                       chatMessageDto.setCreatedAt(chatMessage.getCreatedAt());
                       return chatMessageDto;
-                    })
-                    .collect(Collectors.toList()))
-            .orElse(Collections.emptyList());
+                    }))
+            .sorted(Comparator.comparing(ChatMessageDto::getCreatedAt))
+            .collect(Collectors.toList());
   }
 
   // 채팅 저장
